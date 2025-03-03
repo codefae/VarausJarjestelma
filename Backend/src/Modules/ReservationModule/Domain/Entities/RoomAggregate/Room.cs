@@ -19,7 +19,7 @@ public class Room : IAggregateRoot
         OpenRules = new OpenRules(
             defaultOpenDate ?? DateTime.Now,
             defaultCloseDate ?? DateTime.Now.AddMonths(6));
-        Devices =  [];
+        Devices =  new List<Device>();
         
         var dateTimeNow = DateTime.Now;
         CreatedAt = dateTimeNow;
@@ -33,16 +33,32 @@ public class Room : IAggregateRoot
 
     public bool IsDeviceWithIdInDevicesList(Guid id)
     {
-        throw new NotImplementedException();
+        return Devices.Any(device => device.Id == id);
     }
     
     public bool AddDevice(string name, string deviceType, string description)
     {
-        throw new NotImplementedException();
+        if (Devices.Any(device => device.Name == name))
+        {
+            return false; // Device with the same name already exists
+        }
+        
+        var newDevice = new Device(name, deviceType, description);
+        Devices.Add(newDevice);
+        UpdatedAt = DateTime.Now;
+        return true;
     }
 
     public bool RemoveDevice(Guid deviceId)
     {
-        throw new NotImplementedException();
+        var device = Devices.FirstOrDefault(d => d.Id == deviceId);
+        if (device == null)
+        {
+            return false; // Device not found
+        }
+        
+        Devices.Remove(device);
+        UpdatedAt = DateTime.Now;
+        return true;
     }
 }
