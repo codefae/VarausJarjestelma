@@ -1,14 +1,24 @@
-using FastEndpoints;
+using FluentValidation;
 using FluentValidation.Results;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 namespace src.Modules.ReservationModule.Shared.Dtos;
 
-public class OpenRulesDtoValidator : Validator<OpenRulesDto>
+public class OpenRulesDtoValidator : AbstractValidator<OpenRulesDto>
 {
-    // TODO implement
-    public override ValidationResult Validate(FluentValidation.ValidationContext<OpenRulesDto> context)
+    public OpenRulesDtoValidator()
     {
-        throw new NotImplementedException();
+        RuleFor(rules => rules.DefaultOpenDate)
+            .NotEmpty().WithMessage("DefaultOpenDate is required.")
+            .LessThan(rules => rules.DefaultCloseDate).WithMessage("DefaultOpenDate must be before DefaultCloseDate.");
+
+        RuleFor(rules => rules.DefaultCloseDate)
+            .NotEmpty().WithMessage("DefaultCloseDate is required.");
+
+        RuleFor(rules => rules.OpenTimesSingleDays)
+            .NotNull().WithMessage("OpenTimesSingleDays is required.");
+
+        RuleFor(rules => rules.DefaultOpenTimesForWeek)
+            .NotNull().WithMessage("DefaultOpenTimesForWeek is required.");
     }
 }

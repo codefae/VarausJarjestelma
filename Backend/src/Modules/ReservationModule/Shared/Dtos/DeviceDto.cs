@@ -7,3 +7,4 @@ public class DeviceDto
     public required string DeviceType { get; init; } 
     public required string Description { get; init; } 
 }
+
