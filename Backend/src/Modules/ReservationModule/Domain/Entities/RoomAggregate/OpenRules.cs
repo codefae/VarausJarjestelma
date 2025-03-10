@@ -42,15 +42,40 @@ public class OpenRules
         DateTime defaultOpenDate,
         DateTime defaultCloseDate)
     {
-        throw new NotImplementedException();
+        if (defaultCloseDate < defaultOpenDate)
+            throw new ArgumentException("Start time must be before end time");
+
+        DefaultOpenDate = defaultOpenDate;
+        DefaultCloseDate = defaultCloseDate;
+        UpdatedAt = DateTime.Now;
     }
     
-    public void AddOrChangeOpenTimeSingleDay(DateTime date, TimeSpan startTime, TimeSpan endTime) =>
-        throw new NotImplementedException();
+    public void AddOrChangeOpenTimeSingleDay(DateTime date, TimeSpan startTime, TimeSpan endTime)
+    {
+        if (endTime <= startTime)
+            throw new ArgumentException("End time must be after start time");
+        
+        _openTimesSingleDay[date] = new OpenTimes(startTime, endTime);
+        UpdatedAt = DateTime.Now;
+    }
 
-    public void RemoveOpenTimeSingleDay(DateTime date) =>
-        throw new NotImplementedException();
+    public void RemoveOpenTimeSingleDay(DateTime date)
+    {
+        if (_openTimesSingleDay.Remove(date))
+        {
+            UpdatedAt = DateTime.Now;
+        }
+    }
     
-    public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime) => 
-        throw new NotImplementedException();
+    public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
+    {
+        if (endTime <= startTime)
+            throw new ArgumentException("End time must be after start time");
+        
+        if (!_defaultOpenTimesForWeek.ContainsKey(dayOfWeek))
+            throw new ArgumentException("Invalid day of the week");
+        
+        _defaultOpenTimesForWeek[dayOfWeek] = new OpenTimes(startTime, endTime);
+        UpdatedAt = DateTime.Now;
+    }
 }
