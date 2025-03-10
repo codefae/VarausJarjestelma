@@ -5,6 +5,8 @@ namespace src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 
 // TODO The values that are before current date need to be archived or deleted on a backround job for the db.
 
+
+
 public class Reservation : IAggregateRoot
 {
     public Guid Id { get; }
@@ -17,6 +19,13 @@ public class Reservation : IAggregateRoot
 
     public DateTime CreatedAt { get; } 
     public DateTime UpdatedAt { get; private set; }
+
+public class OpenTimes
+{
+    public TimeSpan OpeningTime { get; set; }
+    public TimeSpan ClosingTime { get; set; }
+
+}
 
     /// <summary>
     /// Creates a reservation.
@@ -83,28 +92,53 @@ public class Reservation : IAggregateRoot
         CreatedAt = dateTimeNow;
         UpdatedAt = dateTimeNow;
     }
+    private TimeSpan RoundToNearest15Minutes(TimeSpan time)
+{
+    int minutes = (int)Math.Round(time.TotalMinutes / 15.0) * 15;
+    return TimeSpan.FromMinutes(minutes);
+}
 
-    public bool IsConflicting(
-        ReadOnlyDictionary<DayOfWeek, OpenTimes> openTimesWeekDays,
-        ReadOnlyDictionary<DateTime, OpenTimes> openTimesSingleDays,
-        DateTime defaultOpenDate,
-        DateTime defaultClosingDate)
+public bool IsConflicting(
+    ReadOnlyDictionary<DayOfWeek, OpenTimes> openTimesWeekDays,
+    ReadOnlyDictionary<DateTime, OpenTimes> openTimesSingleDays,
+    DateTime defaultOpenDate,
+    DateTime defaultClosingDate)
+{
+    // Tarkistetaan, onko varaus sallituissa ajoissa
+    if (Day < defaultOpenDate || Day > defaultClosingDate)
+        return true;
+
+    if (!openTimesSingleDays.TryGetValue(Day, out var openTimes))
     {
-        throw new NotImplementedException();
+        openTimesWeekDays.TryGetValue(Day.DayOfWeek, out openTimes);
     }
 
-    public List<Reservation> GetConflicts(List<Reservation> other)
-    {
-        throw new NotImplementedException();
-    }
-   
-    private void RoundToNearest15Minutes(TimeSpan time)
-    {
-        throw new NotImplementedException();
-    }
-    
-    private void ChangeStartAndEndTime(DateTime startTime, DateTime endTime)
-    {
-         throw new NotImplementedException(); 
-    }
+    if (openTimes == null)
+        return true; // Ei aukioloaikoja, eli oletetaan konflikti
+
+    return StartTime < openTimes.OpeningTime || EndTime > openTimes.ClosingTime;
+}
+
+
+    public List<Reservation> GetConflicts(List<Reservation> otherReservations)
+{
+    return otherReservations.Where(r =>
+        r.RoomId == RoomId &&
+        r.Day == Day &&
+        (r.StartTime < EndTime && r.EndTime > StartTime) // Tarkistaa päällekkäisyyden
+    ).ToList();
+}
+
+    private void ChangeStartAndEndTime(TimeSpan newStartTime, TimeSpan newEndTime)
+{
+    newStartTime = RoundToNearest15Minutes(newStartTime);
+    newEndTime = RoundToNearest15Minutes(newEndTime);
+
+    if (newStartTime >= newEndTime)
+        throw new ArgumentException("Start time must be before end time");
+
+    StartTime = newStartTime;
+    EndTime = newEndTime;
+    UpdatedAt = DateTime.Now;
+}
 }
