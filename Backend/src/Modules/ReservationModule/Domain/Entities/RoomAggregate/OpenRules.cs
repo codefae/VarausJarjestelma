@@ -52,13 +52,19 @@ public class OpenRules
     
     public void AddOrChangeOpenTimeSingleDay(DateTime date, TimeSpan startTime, TimeSpan endTime)
     {
+
+
         _exceptionsToWeekDayRules[date] = new TimeSlot(startTime, endTime);
+
         UpdatedAt = DateTime.Now;
     }
 
     public void RemoveOpenTimeSingleDay(DateTime date)
     {
+
+
         if (_exceptionsToWeekDayRules.Remove(date))
+
         {
             UpdatedAt = DateTime.Now;
         }
@@ -66,6 +72,8 @@ public class OpenRules
     
     public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
     {
+
+
         if (endTime <= startTime)
             throw new ArgumentException("End time must be after start time");
         
@@ -73,6 +81,7 @@ public class OpenRules
             throw new ArgumentException("Invalid day of the week");
         
         _defaultOpenTimesForWeek[dayOfWeek] = new TimeSlot(startTime, endTime);
+
         UpdatedAt = DateTime.Now;
     }
 }
