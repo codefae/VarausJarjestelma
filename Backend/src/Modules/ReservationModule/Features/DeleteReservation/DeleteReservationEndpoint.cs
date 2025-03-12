@@ -14,6 +14,7 @@ public class DeleteReservationEndpoint(IReservationRepository reservationReposit
     public override void Configure()
     {
         Get("/reservation");
+        Validator<DeleteReservationRequestValidator>();
         AllowAnonymous();
     }
 
