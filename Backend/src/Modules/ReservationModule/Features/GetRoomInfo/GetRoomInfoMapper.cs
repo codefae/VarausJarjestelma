@@ -36,7 +36,7 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
         {
             DefaultCloseDate = e.room.OpenRules.DefaultCloseDate,
             DefaultOpenDate = e.room.OpenRules.DefaultOpenDate,
-            OpenTimesSingleDays = e.room.OpenRules.ClosedOnTimeSlotsReadOnly.ToDictionary(x => x.Key, x =>
+            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRulesReadOnly .ToDictionary(x => x.Key, x =>
                 new OpenTimesDto()
                 {
                     StartTime = x.Value.StartTime,

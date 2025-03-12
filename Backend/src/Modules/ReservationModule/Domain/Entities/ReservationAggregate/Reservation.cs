@@ -75,7 +75,7 @@ public class Reservation : IAggregateRoot
 
     public bool IsConflicting(
         ReadOnlyDictionary<DayOfWeek, TimeSlot> openTimesWeekDays,
-        ReadOnlyDictionary<DateTime, TimeSlot> closedOnTimeSlots,
+        ReadOnlyDictionary<DateTime, TimeSlot>  exceptionsToWeekDayRulesReadOnly ,
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
@@ -83,16 +83,16 @@ public class Reservation : IAggregateRoot
         if (Day > defaultOpenDate || Day < defaultClosingDate)
             return true;
 
-        var closedOnTimeSlotsConflicts = closedOnTimeSlots
+        var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly 
             .Where(dateTimeSlot => dateTimeSlot.Key == Day)
             .Select(x => x.Value)
-            .Where(timeSlot => timeSlot.ConflictsWith(TimeSlot))
+            .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
             .ToList();
         
         var openTimesWeekdaysConflicts = openTimesWeekDays
             .Where(openTimeWeekDay => openTimeWeekDay.Key == Day.DayOfWeek)
             .Select(openTimeWeekDay => openTimeWeekDay.Value)
-            .Where(timeSlot => timeSlot.ConflictsWith(TimeSlot))
+            .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
             .ToList();
 
         return closedOnTimeSlotsConflicts.Count != 0 || openTimesWeekdaysConflicts.Count != 0;
