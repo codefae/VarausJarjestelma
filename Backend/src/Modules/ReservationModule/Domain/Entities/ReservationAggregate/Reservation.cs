@@ -111,6 +111,11 @@ public class Reservation : IAggregateRoot
     {
         newStartTime = RoundToNearest15Minutes(newStartTime);
         newEndTime = RoundToNearest15Minutes(newEndTime);
+
+        if (newStartTime < DateTime.Now.TimeOfDay)
+        {
+            throw new ArgumentException("Start time must be in the future");
+        }
         
         TimeSlot = new TimeSlot(newStartTime, newEndTime);
         UpdatedAt = DateTime.Now;
