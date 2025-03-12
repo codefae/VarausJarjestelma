@@ -1,11 +1,11 @@
 namespace src.Modules.ReservationModule.Domain.Entities;
 
-public class OpenTimes
+public class TimeSlot
 {
     public TimeSpan StartTime { get; }
     public TimeSpan EndTime { get; }
 
-    public OpenTimes(TimeSpan startTime, TimeSpan endTime)
+    public TimeSlot(TimeSpan startTime, TimeSpan endTime)
     {
         if(startTime < TimeSpan.Zero)
             throw new ArgumentException("StartTime Cannot Be Negative");
@@ -18,5 +18,10 @@ public class OpenTimes
 
         StartTime = startTime;
         EndTime = endTime;
+    }
+    
+    public bool ConflictsWith(TimeSlot other)
+    {
+        return StartTime < other.EndTime && EndTime > other.StartTime;
     }
 }

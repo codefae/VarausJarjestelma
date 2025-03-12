@@ -7,12 +7,12 @@ public class OpenRules
     /// <summary>
     /// The values that are before current date need to be archived or deleted on a backround job for the db
     /// </summary>
-    private Dictionary<DateTime, OpenTimes> _openTimesSingleDay;
-    public ReadOnlyDictionary<DateTime, OpenTimes> OpenTimesSingleDaysReadOnly => _openTimesSingleDay.AsReadOnly();
+    private Dictionary<DateTime, TimeSlot> _closedOnTimeSlots;
+    public ReadOnlyDictionary<DateTime, TimeSlot> ClosedOnTimeSlotsReadOnly => _closedOnTimeSlots.AsReadOnly();
     public DateTime DefaultOpenDate { get; private set; }
     public DateTime DefaultCloseDate { get; private set; }
-    private Dictionary<DayOfWeek, OpenTimes> _defaultOpenTimesForWeek;
-    public ReadOnlyDictionary<DayOfWeek, OpenTimes> DefaultOpenTimesForWeek => _defaultOpenTimesForWeek.AsReadOnly();
+    private Dictionary<DayOfWeek, TimeSlot> _defaultOpenTimesForWeek;
+    public ReadOnlyDictionary<DayOfWeek, TimeSlot> DefaultOpenTimesForWeek => _defaultOpenTimesForWeek.AsReadOnly();
     public DateTime UpdatedAt { get; private set; } 
     
     public OpenRules(
@@ -24,17 +24,17 @@ public class OpenRules
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
-        _defaultOpenTimesForWeek = new Dictionary<DayOfWeek, OpenTimes>()
+        _defaultOpenTimesForWeek = new Dictionary<DayOfWeek, TimeSlot>()
         {
-            { DayOfWeek.Monday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Tuesday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Wednesday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Thursday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Friday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Saturday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Sunday, new OpenTimes(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Monday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Tuesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Wednesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Thursday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Friday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Saturday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            { DayOfWeek.Sunday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
         };
-        _openTimesSingleDay = [];
+        _closedOnTimeSlots = [];
         UpdatedAt = DateTime.Now;
     }
 
