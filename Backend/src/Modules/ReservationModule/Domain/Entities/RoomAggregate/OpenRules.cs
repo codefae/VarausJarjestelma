@@ -19,8 +19,7 @@ public class OpenRules
         DateTime defaultOpenDate,
         DateTime defaultCloseDate)
     {
-        if (defaultCloseDate < defaultOpenDate)
-            throw new ArgumentException("Start time must be before end time");
+        ValidateDefaultOpenDateBeforeCloseDate(defaultOpenDate, defaultCloseDate);
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
@@ -42,29 +41,23 @@ public class OpenRules
         DateTime defaultOpenDate,
         DateTime defaultCloseDate)
     {
-        if (defaultCloseDate < defaultOpenDate)
-            throw new ArgumentException("Start time must be before end time");
+        ValidateDefaultOpenDateBeforeCloseDate(defaultOpenDate, defaultCloseDate);
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
         UpdatedAt = DateTime.Now;
     }
     
-    public void AddOrChangeOpenTimeSingleDay(DateTime date, TimeSpan startTime, TimeSpan endTime)
+    public void AddOrChangeExceptionsToWeekDayRules(DateTime date, TimeSpan startTime, TimeSpan endTime)
     {
-
-
         _exceptionsToWeekDayRules[date] = new TimeSlot(startTime, endTime);
 
         UpdatedAt = DateTime.Now;
     }
 
-    public void RemoveOpenTimeSingleDay(DateTime date)
+    public void RemoveExceptionsToWeekDayRules(DateTime date)
     {
-
-
         if (_exceptionsToWeekDayRules.Remove(date))
-
         {
             UpdatedAt = DateTime.Now;
         }
@@ -72,16 +65,17 @@ public class OpenRules
     
     public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
     {
-
-
-        if (endTime <= startTime)
-            throw new ArgumentException("End time must be after start time");
-        
         if (!_defaultOpenTimesForWeek.ContainsKey(dayOfWeek))
             throw new ArgumentException("Invalid day of the week");
         
         _defaultOpenTimesForWeek[dayOfWeek] = new TimeSlot(startTime, endTime);
 
         UpdatedAt = DateTime.Now;
+    }
+
+    private static void ValidateDefaultOpenDateBeforeCloseDate(DateTime defaultOpenDate, DateTime defaultCloseDate)
+    {
+        if (defaultCloseDate < defaultOpenDate)
+            throw new ArgumentException("Start time must be before end time");
     }
 }

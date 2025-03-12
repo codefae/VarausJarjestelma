@@ -8,9 +8,8 @@ public class Room : IAggregateRoot
     public string Name { get; private set; }
     public OpenRules OpenRules { get; }
     public List<Device> Devices { get; private set; }
-    
     public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; } 
+    public DateTime UpdatedAt { get; private set; }
 
     public Room(string name, DateTime? defaultOpenDate = null, DateTime? defaultCloseDate = null, Guid? id = null)
     {
@@ -23,7 +22,7 @@ public class Room : IAggregateRoot
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }
-    
+
     public bool UpdateRoom(string name)
     {
         name = TrimAndValidateName(name);
@@ -36,10 +35,8 @@ public class Room : IAggregateRoot
         return true;
     }
 
-    public bool IsDeviceWithIdInDevicesList(Guid id)
-    {
-        return Devices.Any(device => device.Id == id);
-    }
+    public bool IsDeviceWithIdInDevicesList(Guid id) =>
+        Devices.Any(device => device.Id == id);
     
     public bool AddDevice(string name, string deviceType, string description)
     {
@@ -48,7 +45,7 @@ public class Room : IAggregateRoot
         {
             return false; // Device with the same name already exists
         }
-        
+
         Devices.Add(newDevice);
         UpdatedAt = DateTime.Now;
         return true;
@@ -61,7 +58,7 @@ public class Room : IAggregateRoot
         {
             return false; // Device not found
         }
-        
+
         Devices.Remove(device);
         UpdatedAt = DateTime.Now;
         return true;
