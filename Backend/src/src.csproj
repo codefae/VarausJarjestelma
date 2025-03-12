@@ -16,6 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Modules\ReservationModule\Features\PatchReservationStartAndEndTimes\" />
       <Folder Include="Modules\ReservationModule\Infrastructure\" />
       <Folder Include="Modules\ReservationModule\Shared\EndPointGroups\" />
     </ItemGroup>

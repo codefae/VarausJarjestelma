@@ -2,5 +2,5 @@ namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
 public class GetAvailableRoomsResponse
 {
-    public required List<(int roomId, string name)> AvailableRooms { get; set; }
+    public required List<(string roomId, string roomName)> AvailableRooms { get; set; }
 }

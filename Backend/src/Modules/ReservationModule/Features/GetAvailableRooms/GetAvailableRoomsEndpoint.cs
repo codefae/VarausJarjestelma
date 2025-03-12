@@ -6,6 +6,10 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
 public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : EndpointWithoutRequest
+<
+    Results<Ok<GetAvailableRoomsResponse>, ProblemHttpResult>,
+    GetAvailableRoomsMapper
+    >
 {
     public override void Configure()
     {
