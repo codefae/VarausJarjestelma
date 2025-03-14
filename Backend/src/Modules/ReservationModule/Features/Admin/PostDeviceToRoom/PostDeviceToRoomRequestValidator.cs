@@ -2,9 +2,9 @@ using FastEndpoints;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom;
 
-public class PostDeviceToRoomValidator : Validator<PostDeviceToRoomRequest>
+public class PostDeviceToRoomRequestValidator : Validator<PostDeviceToRoomRequest>
 {
-    public PostDeviceToRoomValidator()
+    public PostDeviceToRoomRequestValidator()
     {
         throw new NotImplementedException();
     }
