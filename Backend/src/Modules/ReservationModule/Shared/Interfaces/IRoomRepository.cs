@@ -10,7 +10,7 @@ public interface IRoomRepository
     /// <param name="id"></param>
     /// <returns>Room if found, null if not found</returns>
     Task<Room?> GetRoomByIdAsync(Guid id);
-    Task<IEnumerable<Room>> GetRoomsAsync();
+    Task<IEnumerable<Room>> GetRoomsAsync(CancellationToken ct);
     Task AddRoomAsync(Room room);
     Task UpdateRoomAsync(Room room);
     Task DeleteRoomAsync(Room room);
