@@ -3,9 +3,9 @@ using FastEndpoints;
 
 namespace src.Modules.ReservationModule.Features.PatchReservationStartAndEndTimes;
 
-public class PatchReservationStartAndEndTimesValidator : Validator<PatchReservationStartAndEndTimesRequest>
+public class PatchReservationTimeValidator : Validator<PatchReservationTimeRequest>
 {
-   public PatchReservationStartAndEndTimesValidator()
+   public PatchReservationTimeValidator()
    {
       throw new NotImplementedException();
    }

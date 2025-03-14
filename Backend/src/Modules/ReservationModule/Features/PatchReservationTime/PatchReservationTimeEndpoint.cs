@@ -3,20 +3,20 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace src.Modules.ReservationModule.Features.PatchReservationStartAndEndTimes;
 
-public class PatchReservationStartAndEndTimesEndpoint : Endpoint
+public class PatchReservationTimeEndpoint : Endpoint
 <
-    PatchReservationStartAndEndTimesRequest,
+    PatchReservationTimeRequest,
     Results<Ok, NotFound, ProblemHttpResult>
 >
 {
     public override void Configure()
     {
         Patch("/rooms/{RoomId}/info");
-        Validator<PatchReservationStartAndEndTimesValidator>();
+        Validator<PatchReservationTimeValidator>();
         AllowAnonymous();
     }
 
-    public override Task HandleAsync(PatchReservationStartAndEndTimesRequest req, CancellationToken ct)
+    public override Task HandleAsync(PatchReservationTimeRequest req, CancellationToken ct)
     {
         throw new NotImplementedException();
     }
