@@ -7,6 +7,7 @@ using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 namespace src.Modules.ReservationModule.Features.PatchReservation
 
+
 {
     public class PatchReservationTimeRequest
     {
@@ -24,17 +25,13 @@ namespace src.Modules.ReservationModule.Features.PatchReservation
             _reservationRepository = reservationRepository;
             _roomRepository = roomRepository;
         }
-
         public async Task<(Reservation reservation, Room room)> LoadReservationAndRoomAsync(int reservationId)
         {
-            // Load the reservation object
             var reservation = await _reservationRepository.GetReservationByIdAsync(reservationId);
             if (reservation == null)
             {
                 throw new Exception($"Reservation with ID {reservationId} not found.");
             }
-
-            // Load the room object based on the reservation
             var room = await _roomRepository.GetRoomByIdAsync(reservation.RoomId);
             if (room == null)
             {
