@@ -1,9 +1,14 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
+using src.Modules.ReservationModule.Shared.Interfaces;
 
-namespace src.Modules.ReservationModule.Features.PatchReservationStartAndEndTimes;
+namespace src.Modules.ReservationModule.Features.PatchReservationTime;
 
-public class PatchReservationTimeEndpoint : Endpoint
+public class PatchReservationTimeEndpoint(
+    IRoomRepository roomRepository,
+    IReservationRepository reservationRepository,
+    IBookingDomainService bookingDomainService) : Endpoint
 <
     PatchReservationTimeRequest,
     Results<Ok, NotFound, ProblemHttpResult>
