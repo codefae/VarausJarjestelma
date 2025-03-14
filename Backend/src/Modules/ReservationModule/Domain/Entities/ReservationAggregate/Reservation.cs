@@ -38,39 +38,24 @@ public class Reservation : IAggregateRoot
     {
         RoundToNearest15Minutes(startTime);
         RoundToNearest15Minutes(endTime);
-        day = day.Date;
+        ValidateStartTimeIsInFuture(day, startTime);
 
-        if (day < DateTime.Now.Date)
-            throw new ArgumentException("Day must be in the future");
-
-        if (startTime <= DateTime.Now.TimeOfDay && day == DateTime.Now.Date)
-            throw new ArgumentException("Start time must be in the future if the day is today");
-
+        ReservationType reservationType;
+        if (eventId.HasValue && eventId != Guid.Empty)
+            reservationType = new EventReservation(eventId.Value);
+        else if (deviceId.HasValue && deviceId != Guid.Empty)
+            reservationType = new DeviceReservation(deviceId.Value);
+        else
+            reservationType = new RoomReservation();
+        
         Id = Guid.NewGuid();
         UserId = userId;
         RoomId = roomId;
-        Day = day;
+        Day = day.Date;
         TimeSlot = new TimeSlot(startTime, endTime);
-        if (eventId.HasValue && eventId != Guid.Empty)
-        {
-            ReservationType = new EventReservation(eventId.Value);
-        }
-        else if (deviceId.HasValue && deviceId != Guid.Empty)
-        {
-            ReservationType = new DeviceReservation(deviceId.Value);
-        }
-        else
-        {
-            ReservationType = new RoomReservation();
-        }
+        ReservationType = reservationType;
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
-    }
-
-    private TimeSpan RoundToNearest15Minutes(TimeSpan time)
-    {
-        var minutes = (int)Math.Round(time.TotalMinutes / 15.0) * 15;
-        return TimeSpan.FromMinutes(minutes);
     }
 
     public bool IsConflicting(
@@ -79,7 +64,6 @@ public class Reservation : IAggregateRoot
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
-        // Tarkistetaan, onko varaus sallituissa ajoissa
         if (Day > defaultOpenDate || Day < defaultClosingDate)
             return true;
 
@@ -107,17 +91,28 @@ public class Reservation : IAggregateRoot
         ).ToList();
     }
 
-    private void ChangeStartAndEndTime(TimeSpan newStartTime, TimeSpan newEndTime)
+    public void ChangeStartAndEndTime(TimeSpan newStartTime, TimeSpan newEndTime)
     {
         newStartTime = RoundToNearest15Minutes(newStartTime);
         newEndTime = RoundToNearest15Minutes(newEndTime);
 
-        if (newStartTime < DateTime.Now.TimeOfDay)
-        {
-            throw new ArgumentException("Start time must be in the future");
-        }
+        ValidateStartTimeIsInFuture(Day, newStartTime);
         
         TimeSlot = new TimeSlot(newStartTime, newEndTime);
         UpdatedAt = DateTime.Now;
+    }
+    
+    private static TimeSpan RoundToNearest15Minutes(TimeSpan time)
+    {
+        var minutes = (int)Math.Round(time.TotalMinutes / 15.0) * 15;
+        return TimeSpan.FromMinutes(minutes);
+    }
+
+    private static void ValidateStartTimeIsInFuture(DateTime day, TimeSpan startTime)
+    {
+        if(day.Day < DateTime.Now.Day)
+            throw new ArgumentException("Start day must be today or in the future.");
+        if (day.Day == DateTime.Now.Day && startTime< DateTime.Now.TimeOfDay)
+            throw new ArgumentException("Start time must be in the future.");
     }
 }

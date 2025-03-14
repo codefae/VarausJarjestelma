@@ -4,9 +4,9 @@ using FluentValidation.Results;
 
 namespace src.Modules.ReservationModule.Shared.Dtos;
 
-public class OpenTimesDtoValidator : Validator<OpenTimesDto>
+public class TimeSlotDtoValidator : Validator<TimeSlotDto>
 {
-    public OpenTimesDtoValidator()
+    public TimeSlotDtoValidator()
     {
         RuleFor(x => x.StartTime)
             .LessThan(x => x.EndTime)
