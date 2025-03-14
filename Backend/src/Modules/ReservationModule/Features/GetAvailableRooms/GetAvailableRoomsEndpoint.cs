@@ -9,11 +9,12 @@ namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
 public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : EndpointWithoutRequest
 <
-    Results<Ok<GetAvailableRoomsResponse>, ProblemHttpResult>,
+    Results<Ok<GetAvailableRoomsResponse>, NotFound>,
     GetAvailableRoomsMapper
 >
 {
-    private readonly IRoomRepository _roomRepository = roomRepository ?? throw new ArgumentNullException(nameof(roomRepository));
+    private readonly IRoomRepository _roomRepository =
+        roomRepository ?? throw new ArgumentNullException(nameof(roomRepository));
 
 
     public override void Configure()
@@ -22,17 +23,16 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<GetAvailableRoomsResponse>, ProblemHttpResult>> HandleAsync(CancellationToken ct)
+    public override async Task<Results<Ok<GetAvailableRoomsResponse>, NotFound>> HandleAsync(
+        CancellationToken ct)
     {
-        try
+        var rooms = (await _roomRepository.GetRoomsAsync(ct).ConfigureAwait(false)).ToList();
+        if (rooms.Count == 0)
         {
-            var rooms = await _roomRepository.GetRoomsAsync(ct);
-            var response = Map.FromEntity(rooms.ToList());
-            return TypedResults.Ok(response);
+            return TypedResults.NotFound();
         }
-        catch (Exception ex)
-        {
-            return TypedResults.Problem(ex.Message);
-        }
+
+        var response = Map.FromEntity(rooms);
+        return TypedResults.Ok(response);
     }
 }
