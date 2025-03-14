@@ -76,14 +76,14 @@ var mockRoomRepository = new Mock<IRoomRepository>();
 
 // Setup GetRoomByIdAsync method
 mockRoomRepository.Setup(repo => repo.GetRoomByIdAsync(It.IsAny<Guid>()))
-    .ReturnsAsync((Guid id) => new Room( "Mock Room"));
+    .ReturnsAsync((Guid id) => new Room( "Mock Room", DateTime.Now, DateTime.Now.AddMonths(1)));
 
 // Setup GetRoomsAsync method
 mockRoomRepository.Setup(repo => repo.GetRoomsAsync())
     .ReturnsAsync(new List<Room>
     {
-        new Room( "Mock Room 1", id: Guid.Parse("4a9a8b03-9205-41cc-836a-65a588780cf0")),
-        new Room( "Mock Room 2")
+        new Room( "Mock Room 1", DateTime.Now, DateTime.Now.AddMonths(1), id: Guid.Parse("4a9a8b03-9205-41cc-836a-65a588780cf0")),
+        new Room( "Mock Room 2", DateTime.Now, DateTime.Now.AddMonths(1))
     });
 
 // Setup AddRoomAsync method
