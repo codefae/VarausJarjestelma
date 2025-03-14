@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using FastEndpoints;
 
-namespace src.Modules.ReservationModule.Features.PatchReservationStartAndEndTimes;
+namespace src.Modules.ReservationModule.Features.PatchReservationTime;
 
 public class PatchReservationTimeValidator : Validator<PatchReservationTimeRequest>
 {
