@@ -20,7 +20,10 @@ public interface IReservationRepository
     Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation);
     Task UpdateAsync(Reservation reservation);
     Task DeleteAsync(Reservation reservation);
+    Task<Reservation> GetReservationByIdAsync(int reservationId);
     Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId);
     Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date);
     Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date);
+    Task<Reservation?> GetReservationByIdAsync(Guid reservationId);
+    Task UpdateReservationAsync(Reservation reservation);
 }
