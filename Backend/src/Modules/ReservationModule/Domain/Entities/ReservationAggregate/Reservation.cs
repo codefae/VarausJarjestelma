@@ -91,13 +91,15 @@ public class Reservation : IAggregateRoot
         ).ToList();
     }
 
-    public void ChangeStartAndEndTime(TimeSpan newStartTime, TimeSpan newEndTime)
+    public void ChangeReservationTime(DateTime day, TimeSpan newStartTime, TimeSpan newEndTime)
     {
+        day = day.Date;
         newStartTime = RoundToNearest15Minutes(newStartTime);
         newEndTime = RoundToNearest15Minutes(newEndTime);
 
-        ValidateStartTimeIsInFuture(Day, newStartTime);
+        ValidateStartTimeIsInFuture(day, newStartTime);
         
+        Day = day;
         TimeSlot = new TimeSlot(newStartTime, newEndTime);
         UpdatedAt = DateTime.Now;
     }
@@ -110,7 +112,7 @@ public class Reservation : IAggregateRoot
 
     private static void ValidateStartTimeIsInFuture(DateTime day, TimeSpan startTime)
     {
-        if(day.Day < DateTime.Now.Day)
+        if(day.Day <= DateTime.Now.Day)
             throw new ArgumentException("Start day must be today or in the future.");
         if (day.Day == DateTime.Now.Day && startTime< DateTime.Now.TimeOfDay)
             throw new ArgumentException("Start time must be in the future.");
