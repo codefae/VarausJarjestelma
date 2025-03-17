@@ -29,10 +29,11 @@ public class PostReservationEndPoint(
         while(retries-- > 0)// This is for DbUpdateConcurrencyException
         {
             // Io logic
-            var roomTask = roomRepository.GetRoomByIdAsync(reservation.RoomId);
+            var roomTask = roomRepository.GetRoomByIdAsync(reservation.RoomId, ct);
             var reservationsTask = reservationRepository.GetByRoomAndDateAsync(
                 reservation.RoomId,
-                reservation.Day);
+                reservation.Day,
+                ct);
             
             await Task.WhenAll(roomTask, reservationsTask);
          
@@ -53,7 +54,7 @@ public class PostReservationEndPoint(
                 case ValidateReservationResult.Success:
                     try
                     {
-                        await reservationRepository.AddAndMakeSureRoomIsNotChangedAsync(reservation);
+                        await reservationRepository.AddAndMakeSureRoomIsNotChangedAsync(reservation, ct);
                         return TypedResults.Ok("Reservation created successfully.");
                     }
                     // This is for DbUpdateConcurrencyException
