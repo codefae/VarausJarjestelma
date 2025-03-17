@@ -1,6 +1,17 @@
-namespace src.Modules.ReservationModule.Features.Admin.DeleteDevice;
+using FastEndpoints;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-public class DeleteDeviceFromRoomEndpoint
+namespace src.Modules.ReservationModule.Features.Admin.DeleteDeviceFromRoom;
+
+public class DeleteDeviceFromRoomEndpoint : Endpoint<DeleteDeviceFromRoomRequest, Results<Ok, NotFound>>
 {
-    
+    public override void Configure()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task HandleAsync(DeleteDeviceFromRoomRequest req, CancellationToken ct)
+    {
+        throw new NotImplementedException();
+    }
 }
