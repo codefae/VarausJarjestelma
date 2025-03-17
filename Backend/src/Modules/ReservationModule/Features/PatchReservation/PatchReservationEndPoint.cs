@@ -45,7 +45,8 @@ public class PatchReservationEndPoint(
                 return TypedResults.NotFound("Room not found!");
             }
 
-            var reservations = (await reservationRepository.GetByRoomAsync(room.Id))
+            var reservations = 
+                (await reservationRepository.GetByRoomAsync(room.Id))
                 .Where(x => x.Id != reservation.Id);
 
             var result = bookingDomainService.ValidateReservation(reservation, room, reservations);

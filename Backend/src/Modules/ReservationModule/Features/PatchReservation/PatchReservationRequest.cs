@@ -13,7 +13,7 @@ namespace src.Modules.ReservationModule.Features.PatchReservation
     {
         public required string ReservationId { get; set; }
         public required DateTime Day { get; set; }
-        public required TimeSpan StartTime { get; set; }
-        public required TimeSpan EndTime { get; set; }
+        public required TimeSlotDto TimeSlotDto { get; set; }
+
     }
 }

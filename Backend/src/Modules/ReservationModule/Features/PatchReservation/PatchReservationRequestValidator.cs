@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices.JavaScript;
 using FastEndpoints;
 using FluentValidation;
+using src.Modules.ReservationModule.Shared.Dtos;
 
 
 namespace src.Modules.ReservationModule.Features.PatchReservation;
@@ -12,14 +13,29 @@ public class PatchReservationRequestValidator : Validator<PatchReservationReques
         RuleFor(x => x.ReservationId)
             .NotEmpty().WithMessage("Reservation ID is required.");
 
-        RuleFor(x => x.StartTime)
-            .NotEmpty().WithMessage("Start time is required.");
-        RuleFor(x => x.EndTime)
-            .NotEmpty().WithMessage("End time is required.")
-            .GreaterThan(x => x.StartTime).WithMessage("End date must be after the start date.");
-
         RuleFor(x => x.Day)
-            .NotEmpty().WithMessage("Day is required.")
-            .GreaterThan(DateTime.Now - TimeSpan.FromDays(1)).WithMessage("Day must be in the future.");
+            .NotEmpty().WithMessage("Day is required.");
+
+        RuleFor(x => x.TimeSlotDto).SetValidator(new TimeSlotDtoValidator());
+
+        RuleFor(x => x)
+            .Must(IsValid).WithMessage("Invalid request.");
+    }
+
+    private bool IsValid(PatchReservationRequest request)
+    {
+        if (request.Day.Day > DateTime.Now.Day)
+            return false;
+
+        if (request.Day.Day == DateTime.Now.Day)
+        {
+            if(request.TimeSlotDto.StartTime < DateTime.Now.TimeOfDay)
+                return false;
+        }
+        
+        if(request.TimeSlotDto.StartTime> request.TimeSlotDto.EndTime)
+            return false;
+        
+        return true;
     }
 }
