@@ -20,8 +20,8 @@ public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, I
 
     public override async Task<Results<Ok<GetRoomInfoResponse>, ProblemHttpResult>> HandleAsync(GetRoomInfoRequest req, CancellationToken ct)
     {
-        var roomTask = roomRepository.GetRoomByIdAsync(Guid.Parse(req.RoomId));
-        var reservationsTask = reservationRepository.GetByRoomAsync(Guid.Parse(req.RoomId));
+        var roomTask = roomRepository.GetRoomByIdAsync(Guid.Parse(req.RoomId), ct);
+        var reservationsTask = reservationRepository.GetByRoomAsync(Guid.Parse(req.RoomId), ct);
 
         await Task.WhenAll(roomTask, reservationsTask);
 

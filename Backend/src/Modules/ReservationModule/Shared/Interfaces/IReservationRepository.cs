@@ -8,22 +8,21 @@ public interface IReservationRepository
     /// Get a reservation by its id
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Reservation if found, null if not found</returns>
-    Task<Reservation?> GetAsync(Guid id);
-    Task<IEnumerable<Reservation>> GetAllAsync();
+    Task<Reservation?> GetAsync(Guid id, CancellationToken cancellationToken);
+    Task<IEnumerable<Reservation>> GetAllAsync(CancellationToken cancellationToken);
     
     /// <summary>
     /// Throws an DbUpdateConcurrencyException if the room is changed
     /// </summary>
     /// <param name="reservation"></param>
     /// <returns></returns>
-    Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation);
-    Task UpdateAsync(Reservation reservation);
-    Task DeleteAsync(Reservation reservation);
-    Task<Reservation> GetReservationByIdAsync(int reservationId);
-    Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId);
-    Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date);
-    Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date);
-    Task<Reservation?> GetReservationByIdAsync(Guid reservationId);
-    Task UpdateReservationAsync(Reservation reservation);
-}
+
+    Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
+    Task UpdateAsync(Reservation reservation, CancellationToken cancellationToken);
+    Task DeleteAsync(Reservation reservation, CancellationToken cancellationToken);
+    Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken);
+    Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
+    Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date, CancellationToken cancellationToken);
+

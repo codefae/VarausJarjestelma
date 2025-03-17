@@ -25,14 +25,15 @@ public class PostReservationEndPoint(
     {
         var reservation = Map.ToEntity(req);
         
-        var retries = 5;
-        while(retries-- > 0)
+        var retries = 5; // This is for DbUpdateConcurrencyException
+        while(retries-- > 0)// This is for DbUpdateConcurrencyException
         {
             // Io logic
-            var roomTask = roomRepository.GetRoomByIdAsync(reservation.RoomId);
+            var roomTask = roomRepository.GetRoomByIdAsync(reservation.RoomId, ct);
             var reservationsTask = reservationRepository.GetByRoomAndDateAsync(
                 reservation.RoomId,
-                reservation.Day);
+                reservation.Day,
+                ct);
             
             await Task.WhenAll(roomTask, reservationsTask);
          
@@ -53,9 +54,10 @@ public class PostReservationEndPoint(
                 case ValidateReservationResult.Success:
                     try
                     {
-                        await reservationRepository.AddAndMakeSureRoomIsNotChangedAsync(reservation);
+                        await reservationRepository.AddAndMakeSureRoomIsNotChangedAsync(reservation, ct);
                         return TypedResults.Ok("Reservation created successfully.");
                     }
+                    // This is for DbUpdateConcurrencyException
                     catch (DbUpdateConcurrencyException e)
                     {
                         logger.LogInformation("Concurrency exception occurred while creating a new reservation, retrying...");
@@ -70,6 +72,7 @@ public class PostReservationEndPoint(
             }
         }
         
+        // This is for DbUpdateConcurrencyException
         return TypedResults.Problem("Many people try to create reservations a the same time try again later!");
     }
 }
