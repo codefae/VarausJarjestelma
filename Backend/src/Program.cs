@@ -104,7 +104,7 @@ var roomRepository = mockRoomRepository.Object;
 
 builder.Services.AddTransient<IRoomRepository>(sp => roomRepository);
 builder.Services.AddTransient<IReservationRepository>(sp => reservationRepository);
-builder.Services.AddSingleton< BookingDomainService>();
+builder.Services.AddSingleton<IBookingDomainService, BookingDomainService>();
 
 var app = builder.Build();
 

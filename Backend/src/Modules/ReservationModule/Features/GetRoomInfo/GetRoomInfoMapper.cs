@@ -25,8 +25,8 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             Id = x.Id.ToString(),
             RoomId = x.RoomId.ToString(),
             ReservationType = x.ReservationType.Type,
-            StartTime =x.Day.AddMinutes(x.StartTime.Minutes),
-            EndTime = x.Day.AddMinutes(x.EndTime.Minutes),
+            StartTime =x.Day.AddMinutes(x.TimeSlot.StartTime.Minutes),
+            EndTime = x.Day.AddMinutes(x.TimeSlot.EndTime.Minutes),
             DeviceId = x.ReservationType is DeviceReservation deviceReservation ? deviceReservation.DeviceId.ToString() : null,
             // TODO This is for the event feature
             // EventId = x.ReservationType is EventReservation eventReservation ? eventReservation.EventId.ToString() : null
@@ -36,14 +36,14 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
         {
             DefaultCloseDate = e.room.OpenRules.DefaultCloseDate,
             DefaultOpenDate = e.room.OpenRules.DefaultOpenDate,
-            OpenTimesSingleDays = e.room.OpenRules.OpenTimesSingleDaysReadOnly.ToDictionary(x => x.Key, x =>
-                new OpenTimesDto()
+            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRulesReadOnly .ToDictionary(x => x.Key, x =>
+                new TimeSlotDto()
                 {
                     StartTime = x.Value.StartTime,
                     EndTime = x.Value.EndTime
                 }),
             DefaultOpenTimesForWeek = e.room.OpenRules.DefaultOpenTimesForWeek.ToDictionary(x => x.Key, x =>
-                new OpenTimesDto()
+                new TimeSlotDto()
                 {
                     StartTime = x.Value.StartTime,
                     EndTime = x.Value.EndTime
