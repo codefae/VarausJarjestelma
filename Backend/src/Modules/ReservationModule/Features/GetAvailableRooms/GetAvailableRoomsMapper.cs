@@ -6,8 +6,11 @@ namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
 public class GetAvailableRoomsMapper : ResponseMapper<GetAvailableRoomsResponse, List<Room>>
 {
-    public override GetAvailableRoomsResponse FromEntity(List<Room> e)
+    public override GetAvailableRoomsResponse FromEntity(List<Room> rooms)
     {
-        throw new NotImplementedException();
+        return new GetAvailableRoomsResponse
+        {
+            AvailableRooms = rooms.Select(room => (room.Id.ToString(), room.Name)).ToList()
+        };
     }
 }
