@@ -2,16 +2,12 @@ namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 public class Device
 {
-    internal Guid UserId;
-
     public Guid Id { get; }
     public string Name { get; private set; }
     public string DeviceType { get; private set; }
     public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
-
-    public Guid RoomId { get; private set; }
 
     public Device(string name, string deviceType, string description)
     {
