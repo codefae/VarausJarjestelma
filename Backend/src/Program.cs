@@ -82,8 +82,8 @@ mockRoomRepository.Setup(repo => repo.GetRoomByIdAsync(It.IsAny<Guid>(), cancell
 mockRoomRepository.Setup(repo => repo.GetRoomsAsync(cancellationToken))
     .ReturnsAsync(new List<Room>
     {
-        new Room( "Mock Room 1", id: Guid.Parse("4a9a8b03-9205-41cc-836a-65a588780cf0")),
-        new Room( "Mock Room 2")
+        new Room( "Mock Room 1", DateTime.Now, DateTime.Now.AddMonths(1), id: Guid.Parse("4a9a8b03-9205-41cc-836a-65a588780cf0")),
+        new Room( "Mock Room 2", DateTime.Now, DateTime.Now.AddMonths(1))
     });
 
 // Setup AddRoomAsync method

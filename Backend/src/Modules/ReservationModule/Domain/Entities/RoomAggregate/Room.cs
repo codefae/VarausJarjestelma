@@ -11,13 +11,13 @@ public class Room : IAggregateRoot
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
-    public Room(string name, DateTime? defaultOpenDate = null, DateTime? defaultCloseDate = null, Guid? id = null)
+    public Room(string name, DateTime defaultOpenDate, DateTime defaultCloseDate, Guid? id = null)
     {
         Id = id ?? Guid.NewGuid();
         Name = TrimAndValidateName(name);
         OpenRules = new OpenRules(
-            defaultOpenDate ?? DateTime.Now,
-            defaultCloseDate ?? DateTime.Now.AddMonths(6));
+            defaultOpenDate,
+            defaultCloseDate);
         Devices = [];
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
