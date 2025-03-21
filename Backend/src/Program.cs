@@ -79,13 +79,12 @@ mockRoomRepository.Setup(repo => repo.GetRoomByIdAsync(It.IsAny<Guid>(), It.IsAn
     .ReturnsAsync((Guid id, CancellationToken cancellationToken) => new Room( "Mock Room", DateTime.Now.AddDays(1),DateTime.Now.AddMonths(6), id));
 
 // Setup GetRoomsAsync method
-mockRoomRepository.Setup(repo => repo.GetRoomsAsync(cancellationToken))
-    .ReturnsAsync(new List<Room>
+mockRoomRepository.Setup(repo => repo.GetRoomsAsync(It.IsAny<CancellationToken>()))
+    .ReturnsAsync((IEnumerable<Room>)new List<Room>
     {
-        new Room( "Mock Room 1", DateTime.Now, DateTime.Now.AddMonths(1), id: Guid.Parse("4a9a8b03-9205-41cc-836a-65a588780cf0")),
-        new Room( "Mock Room 2", DateTime.Now, DateTime.Now.AddMonths(1))
+        new Room("Mock Room 1", DateTime.Now, DateTime.Now.AddMonths(1), id: Guid.NewGuid()),
+        new Room("Mock Room 2", DateTime.Now, DateTime.Now.AddMonths(1), id: Guid.NewGuid())
     });
-
 // Setup AddRoomAsync method
 mockRoomRepository.Setup(repo => repo.AddRoomAsync(It.IsAny<Room>(), cancellationToken))
     .Returns(Task.CompletedTask);
