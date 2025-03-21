@@ -7,6 +7,6 @@ public class PostRoomMapper : RequestMapper<PostRoomRequest, Room>
 {
     public override Room ToEntity(PostRoomRequest r)
     {
-        return new Room(r.Name.ToString(), r.DefaultOpenDate, r.DefaultCloseDate, Guid.NewGuid());
+        return new Room(r.Name, r.DefaultOpenDate, r.DefaultCloseDate);
     }
 }
