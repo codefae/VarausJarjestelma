@@ -1,9 +1,10 @@
+using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
 
 namespace src.Modules.ReservationModule.Shared.Dtos;
 
-public class DeviceDtoValidator : AbstractValidator<DeviceDto>
+public class DeviceDtoValidator : Validator<DeviceDto>
 {
     public DeviceDtoValidator()
     {

@@ -1,10 +1,11 @@
+using FastEndpoints;
 using FluentValidation;
 using FluentValidation.Results;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 namespace src.Modules.ReservationModule.Shared.Dtos;
 
-public class OpenRulesDtoValidator : AbstractValidator<OpenRulesDto>
+public class OpenRulesDtoValidator : Validator<OpenRulesDto>
 {
     public OpenRulesDtoValidator()
     {
