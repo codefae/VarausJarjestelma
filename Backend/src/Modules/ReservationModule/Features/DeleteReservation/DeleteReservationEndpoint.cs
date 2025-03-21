@@ -7,7 +7,7 @@ namespace src.Modules.ReservationModule.Features.DeleteReservation;
 
 public class DeleteReservationEndpoint(IReservationRepository reservationRepository) : EndpointWithoutRequest
 <
-    Results<Ok, NotFound, ProblemHttpResult>
+    Results<Ok, NotFound>
 >
 {
     public override void Configure()
@@ -16,16 +16,15 @@ public class DeleteReservationEndpoint(IReservationRepository reservationReposit
         AllowAnonymous();
     }
 
-    public override async Task HandleAsync(CancellationToken ct)
+    public override async Task<Results<Ok, NotFound>> HandleAsync(CancellationToken ct)
     {
         var id = Route<Guid>("id");
         var result = await reservationRepository.DeleteAsync(id, ct);
+        
         if (!result)
-        {
-            await SendAsync(TypedResults.NotFound());
-            return;
-        }
-        await SendAsync(TypedResults.Ok());
+            return TypedResults.NotFound();
+        
+        return TypedResults.Ok();
     }
 }
 
