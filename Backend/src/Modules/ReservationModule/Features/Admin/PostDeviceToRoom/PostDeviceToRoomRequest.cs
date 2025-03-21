@@ -1,15 +1,12 @@
-namespace src.Modules.ReservationModule.Features.PostDeviceToRoom
+using src.Modules.ReservationModule.Shared.Dtos;
+
+namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom
 {
     public class PostDeviceToRoomRequest
     {
-        public string UserId { get; set; }
-        public DeviceDto DeviceDto { get; set; }
-    }
-
-    public class DeviceDto
-    {
-        public string RoomId { get; set; }
-        public string DeviceId { get; set; }
-        public string DeviceName { get; set; }
+        public required string RoomId { get; set; }
+        public required string Name { get; init; } 
+        public required string DeviceType { get; init; } 
+        public required string Description { get; init; } 
     }
 }
