@@ -1,24 +1,33 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using src.Modules.ReservationModule.Shared.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostRoom;
 
-public class PostRoomEndpoint : Endpoint
-<
-    PostRoomRequest,
-    Results<Ok, Conflict, ProblemHttpResult>,
-    PostRoomMapper
->
+public class PostRoomEndpoint(IRoomRepository roomRepository)
+    : Endpoint<PostRoomRequest, Results<Ok, Conflict<string>, ProblemHttpResult>, PostRoomMapper>
 {
     public override void Configure()
     {
-        Post("/Admin/Room/Post");
+        Post("/admin/room");
         Validator<PostRoomValidator>();
         AllowAnonymous();
     }
 
-    public override Task HandleAsync(PostRoomRequest req, CancellationToken ct)
+    public override async Task<Results<Ok, Conflict<string>, ProblemHttpResult>> HandleAsync(PostRoomRequest req,
+        CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var rooms = await roomRepository.GetRoomsAsync(ct);
+        if (rooms.Any(r => r.Name == req.Name))
+            return TypedResults.Conflict("Room with the same name already exists");
+        
+
+        var room = Map.ToEntity(req);
+        await roomRepository.AddRoomAsync(room, ct);
+        return TypedResults.Ok();
     }
 }

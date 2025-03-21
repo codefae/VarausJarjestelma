@@ -7,6 +7,6 @@ public class PostRoomMapper : RequestMapper<PostRoomRequest, Room>
 {
     public override Room ToEntity(PostRoomRequest r)
     {
-        throw new NotImplementedException();
+        return new Room(r.Name, r.DefaultOpenDate, r.DefaultCloseDate);
     }
 }
