@@ -1,30 +1,26 @@
 using FastEndpoints;
 using FluentValidation;
 
-namespace src.Modules.ReservationModule.Features.PostDeviceToRoom;
+namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom;
 
 public class PostDeviceToRoomRequestValidator : Validator<PostDeviceToRoomRequest>
 {
     public PostDeviceToRoomRequestValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("UserId is required.")
-            .Must(BeAValidGuid).WithMessage("UserId must be a valid GUID.");
-
-        RuleFor(x => x.DeviceDto.RoomId)
+        RuleFor(x => x.RoomId)
             .NotEmpty().WithMessage("RoomId is required.")
-            .Must(BeAValidGuid).WithMessage("RoomId must be a valid GUID.");
+            .Must(x => Guid.TryParse(x, out _)).WithMessage("RoomId must be a valid GUID.");
 
-        RuleFor(x => x.DeviceDto.DeviceId)
-            .NotEmpty().WithMessage("DeviceId is required.")
-            .Must(BeAValidGuid).WithMessage("DeviceId must be a valid GUID.");
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required.")
+            .Length(1, 100).WithMessage("Name must be between 1 and 100 characters.");
+        
+        RuleFor(x => x.DeviceType)
+            .NotEmpty().WithMessage("DeviceType is required.")
+            .Length(1, 100).WithMessage("DeviceType must be between 1 and 100 characters.");
 
-        RuleFor(x => x.DeviceDto.DeviceName)
-            .NotEmpty().WithMessage("DeviceName is required.");
-    }
-
-    private bool BeAValidGuid(string value)
-    {
-        return Guid.TryParse(value, out _);
+        RuleFor(x => x.Description)
+            .NotEmpty().WithMessage("Description is required.")
+            .Length(1, 100).WithMessage("Name must be between 1 and 100 characters.");
     }
 }

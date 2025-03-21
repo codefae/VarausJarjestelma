@@ -16,15 +16,14 @@ public class DeleteReservationEndpoint(IReservationRepository reservationReposit
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, NotFound>> HandleAsync(CancellationToken ct)
+    public override async Task<Results<Ok, NotFound<string>>> HandleAsync(CancellationToken ct)
     {
         var id = Route<Guid>("id");
         var result = await reservationRepository.DeleteAsync(id, ct);
-        
+
         if (!result)
-            return TypedResults.NotFound();
-        
+            return TypedResults.NotFound("The reservation you tried to delete was not found.");
+
         return TypedResults.Ok();
     }
 }
-
