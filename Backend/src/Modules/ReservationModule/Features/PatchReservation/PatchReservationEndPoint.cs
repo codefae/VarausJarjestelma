@@ -48,7 +48,8 @@ public class PatchReservationEndPoint(
             var reservations = 
                 (await reservationRepository.GetByRoomAsync(room.Id, ct))
                 .Where(x => x.Id != reservation.Id);
-
+            
+            reservation.ChangeReservationTime(req.Day,req.TimeSlotDto.StartTime, req.TimeSlotDto.EndTime);
             var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
 
             switch (result)
