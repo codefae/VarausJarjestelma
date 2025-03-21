@@ -1,3 +1,4 @@
+using System.Web;
 using FastEndpoints;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
@@ -10,7 +11,9 @@ public class GetAvailableRoomsMapper : ResponseMapper<GetAvailableRoomsResponse,
     {
         return new GetAvailableRoomsResponse
         {
-            AvailableRooms = rooms.Select(room => (room.Id.ToString(), room.Name)).ToList()
+            AvailableRooms = rooms.Select(room =>
+                (HttpUtility.HtmlEncode(room.Id.ToString()),
+                    HttpUtility.HtmlEncode(room.Name))).ToList()
         };
     }
 }
