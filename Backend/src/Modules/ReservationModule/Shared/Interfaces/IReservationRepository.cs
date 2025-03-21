@@ -18,15 +18,16 @@ public interface IReservationRepository
     /// Throws an DbUpdateConcurrencyException if the room is changed
     /// </summary>
     /// <param name="reservation"></param>
-    /// <param name="cancellationToken"></param>
     /// <returns></returns>
+
     Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
 
     Task UpdateAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
-    Task<bool> DeleteAsync(Guid reservationId, CancellationToken cancellationToken);
+    Task DeleteAsync(Reservation reservation, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
 
     Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date,
         CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(object id, CancellationToken ct);
 }
