@@ -19,23 +19,20 @@ public class PatchReservationRequestValidator : Validator<PatchReservationReques
         RuleFor(x => x.TimeSlotDto).SetValidator(new TimeSlotDtoValidator());
 
         RuleFor(x => x)
-            .Must(IsValid).WithMessage("Invalid request.");
+            .Must(IsResrevationInFuture).WithMessage("Reservation is not in the future.");
     }
 
-    private bool IsValid(PatchReservationRequest request)
+    private bool IsResrevationInFuture(PatchReservationRequest request)
     {
         if (request.Day.Day > DateTime.Now.Day)
-            return false;
+            return true;
 
         if (request.Day.Day == DateTime.Now.Day)
         {
-            if(request.TimeSlotDto.StartTime < DateTime.Now.TimeOfDay)
-                return false;
+            if(request.TimeSlotDto.StartTime > DateTime.Now.TimeOfDay)
+                return true;
         }
         
-        if(request.TimeSlotDto.StartTime> request.TimeSlotDto.EndTime)
-            return false;
-        
-        return true;
+       return false;
     }
 }

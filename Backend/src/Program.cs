@@ -20,8 +20,8 @@ builder.Services
 var mockReservationRepository = new Mock<IReservationRepository>();
 var cancellationToken = CancellationToken.None;
 // Setup GetAsync method
-mockReservationRepository.Setup(repo => repo.GetAsync(It.IsAny<Guid>(), cancellationToken))
-    .ReturnsAsync((Guid id) => new Reservation(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now.AddDays(1), TimeSpan.FromHours(10), TimeSpan.FromHours(12)));
+mockReservationRepository.Setup(repo => repo.GetAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync((Guid id, CancellationToken cancellationToken) => new Reservation(Guid.NewGuid(), Guid.NewGuid(), DateTime.Now.AddDays(1), TimeSpan.FromHours(10), TimeSpan.FromHours(12)));
 
 // Setup GetAllAsync method
 mockReservationRepository.Setup(repo => repo.GetAllAsync(cancellationToken))
@@ -36,7 +36,7 @@ mockReservationRepository.Setup(repo => repo.AddAndMakeSureRoomIsNotChangedAsync
     .Returns(Task.CompletedTask);
 
 // Setup UpdateAsync method
-mockReservationRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Reservation>(), cancellationToken))
+mockReservationRepository.Setup(repo => repo.UpdateAndMakeSureRoomIsNotChangedAsync(It.IsAny<Reservation>(), cancellationToken))
     .Returns(Task.CompletedTask);
 
 // Setup DeleteAsync method
@@ -44,22 +44,22 @@ mockReservationRepository.Setup(repo => repo.DeleteAsync(It.IsAny<Reservation>()
     .Returns(Task.CompletedTask);
 
 // Setup GetByRoomAsync method
-mockReservationRepository.Setup(repo => repo.GetByRoomAsync(It.IsAny<Guid>(), cancellationToken))
-    .ReturnsAsync((Guid roomId) => new List<Reservation>
+mockReservationRepository.Setup(repo => repo.GetByRoomAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync((Guid roomId, CancellationToken cancellationToken) => new List<Reservation>
     {
         new Reservation(Guid.NewGuid(), roomId, DateTime.Now.AddDays(1), TimeSpan.FromHours(10), TimeSpan.FromHours(12))
     });
 
 // Setup GetByUserAsync method
-mockReservationRepository.Setup(repo => repo.GetByUserAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), cancellationToken))
-    .ReturnsAsync((Guid userId, DateTime date) => new List<Reservation>
+mockReservationRepository.Setup(repo => repo.GetByUserAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync((Guid userId, DateTime date, CancellationToken cancellationToken) => new List<Reservation>
     {
         new Reservation(userId, Guid.NewGuid(), date, TimeSpan.FromHours(10), TimeSpan.FromHours(12))
     });
 
 // Setup GetByRoomAndDateAsync method
-mockReservationRepository.Setup(repo => repo.GetByRoomAndDateAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), cancellationToken))
-    .ReturnsAsync((Guid roomId, DateTime date) => new List<Reservation>
+mockReservationRepository.Setup(repo => repo.GetByRoomAndDateAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync((Guid roomId, DateTime date, CancellationToken cancellationToken) => new List<Reservation>
     {
         new Reservation(Guid.NewGuid(), roomId, date, TimeSpan.FromHours(10), TimeSpan.FromHours(12))
     });
@@ -75,8 +75,8 @@ var reservationRepository = mockReservationRepository.Object;
 var mockRoomRepository = new Mock<IRoomRepository>();
 
 // Setup GetRoomByIdAsync method
-mockRoomRepository.Setup(repo => repo.GetRoomByIdAsync(It.IsAny<Guid>(), cancellationToken))
-    .ReturnsAsync((Guid id) => new Room( "Mock Room"));
+mockRoomRepository.Setup(repo => repo.GetRoomByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+    .ReturnsAsync((Guid id, CancellationToken cancellationToken) => new Room( "Mock Room", DateTime.Now.AddDays(1),DateTime.Now.AddMonths(6), id));
 
 // Setup GetRoomsAsync method
 mockRoomRepository.Setup(repo => repo.GetRoomsAsync(cancellationToken))

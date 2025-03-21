@@ -11,8 +11,9 @@ public interface IReservationRepository
     /// <param name="cancellationToken"></param>
     /// <returns>Reservation if found, null if not found</returns>
     Task<Reservation?> GetAsync(Guid id, CancellationToken cancellationToken);
+
     Task<IEnumerable<Reservation>> GetAllAsync(CancellationToken cancellationToken);
-    
+
     /// <summary>
     /// Throws an DbUpdateConcurrencyException if the room is changed
     /// </summary>
@@ -20,9 +21,12 @@ public interface IReservationRepository
     /// <returns></returns>
 
     Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
-    Task UpdateAsync(Reservation reservation, CancellationToken cancellationToken);
+
+    Task UpdateAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
     Task DeleteAsync(Reservation reservation, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
-    Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date, CancellationToken cancellationToken);
 
+    Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date,
+        CancellationToken cancellationToken);
+}

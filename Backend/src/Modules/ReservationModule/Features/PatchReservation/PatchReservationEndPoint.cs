@@ -20,7 +20,7 @@ public class PatchReservationEndPoint(
 {
     public override void Configure()
     {
-        Patch("/reservations/{id}");
+        Patch("/reservations");
         Validator<PatchReservationRequestValidator>();
         AllowAnonymous();
     }
@@ -33,20 +33,20 @@ public class PatchReservationEndPoint(
         var retries = 3;
         while (retries-- > 0)
         {
-            var reservation = await reservationRepository.GetReservationByIdAsync(reservationId);
+            var reservation = await reservationRepository.GetAsync(reservationId, ct);
             if (reservation == null)
             {
                 return TypedResults.NotFound("Reservation not found!");
             }
 
-            var room = await roomRepository.GetRoomByIdAsync(reservation.RoomId);
+            var room = await roomRepository.GetRoomByIdAsync(reservation.RoomId, ct);
             if (room == null)
             {
                 return TypedResults.NotFound("Room not found!");
             }
 
             var reservations = 
-                (await reservationRepository.GetByRoomAsync(room.Id))
+                (await reservationRepository.GetByRoomAsync(room.Id, ct))
                 .Where(x => x.Id != reservation.Id);
 
             var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
@@ -56,7 +56,7 @@ public class PatchReservationEndPoint(
                 case ValidateReservationResult.Success:
                     try
                     {
-                        await reservationRepository.UpdateReservationAsync(reservation);
+                        await reservationRepository.UpdateAndMakeSureRoomIsNotChangedAsync(reservation, ct);
                         return TypedResults.Ok("Reservation updated successfully.");
                     }
                     catch (DbUpdateConcurrencyException e)
@@ -64,7 +64,6 @@ public class PatchReservationEndPoint(
                         logger.LogInformation(
                             "Concurrency exception occurred while updating the reservation, retrying...");
                     }
-
                     break;
                 case ValidateReservationResult.ReservationConflicts:
                     return TypedResults.Problem("Reservation conflicts with other reservations!");
