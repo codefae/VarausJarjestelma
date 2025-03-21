@@ -1,1 +1,0 @@
-var reservation = await reservationRepository.GetAsync(reservationId, ct);
