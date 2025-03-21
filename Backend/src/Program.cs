@@ -40,8 +40,8 @@ mockReservationRepository.Setup(repo => repo.UpdateAndMakeSureRoomIsNotChangedAs
     .Returns(Task.CompletedTask);
 
 // Setup DeleteAsync method
-mockReservationRepository.Setup(repo => repo.DeleteAsync(It.IsAny<Reservation>(), cancellationToken))
-    .Returns(Task.CompletedTask);
+mockReservationRepository.Setup(repo => repo.DeleteAsync(It.IsAny<Guid>(), cancellationToken))
+    .Returns(Task.FromResult(true));
 
 // Setup GetByRoomAsync method
 mockReservationRepository.Setup(repo => repo.GetByRoomAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))

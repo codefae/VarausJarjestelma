@@ -5,21 +5,20 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 
 namespace src.Modules.ReservationModule.Features.DeleteReservation;
 
-public class DeleteReservationEndpoint(IReservationRepository reservationRepository) : Endpoint
+public class DeleteReservationEndpoint(IReservationRepository reservationRepository) : EndpointWithoutRequest
 <
-    DeleteReservationRequest,
-    Results<Ok, NotFound, ProblemHttpResult>
->
+Results<Ok, NotFound>>
 {
     public override void Configure()
     {
-        Delete("/reservation");
-        Validator<DeleteReservationRequestValidator>();
+        Delete("/reservation/{id}");
         AllowAnonymous();
     }
 
-    public override Task HandleAsync(DeleteReservationRequest req, CancellationToken ct)
+    public override Task HandleAsync(CancellationToken ct)
     {
+        var id = Route<Guid>("id");
+        
         throw new NotImplementedException();
     }
 }
