@@ -7,7 +7,7 @@ public class DeleteDeviceFromRoomEndpoint : Endpoint<DeleteDeviceFromRoomRequest
 {
     public override void Configure()
     {
-       Delete("/reservation/{id}");
+       Delete("/room/{roomId}/device/{deviceId}");
     }
 
     public override Task HandleAsync(DeleteDeviceFromRoomRequest req, CancellationToken ct)
