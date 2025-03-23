@@ -12,7 +12,7 @@ public class PostDeviceToRoomEndpoint(
 {
     public override void Configure()
     {
-        Post("/room/device");
+        Post("/admin/room/device");
         Validator<PostDeviceToRoomRequestValidator>();
         AllowAnonymous();
     }

@@ -19,7 +19,7 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<GetAvailableRoomsResponse>, NotFound>> HandleAsync(
+    public override async Task<Results<Ok<GetAvailableRoomsResponse>, NotFound>> ExecuteAsync(
         CancellationToken ct)
     {
         var rooms = (await roomRepository.GetRoomsAsync(ct).ConfigureAwait(false)).ToList();
@@ -29,6 +29,7 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
         }
 
         var response = Map.FromEntity(rooms);
+        
         return TypedResults.Ok(response);
     }
 }

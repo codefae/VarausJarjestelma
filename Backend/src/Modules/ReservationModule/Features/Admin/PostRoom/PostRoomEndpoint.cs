@@ -18,7 +18,7 @@ public class PostRoomEndpoint(IUnitOfWork unitOfWork)
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok, Conflict<string>, ProblemHttpResult>> HandleAsync(PostRoomRequest req,
+    public override async Task<Results<Ok, Conflict<string>, ProblemHttpResult>> ExecuteAsync(PostRoomRequest req,
         CancellationToken ct)
     {
         await unitOfWork.BeginTransactionAsync();

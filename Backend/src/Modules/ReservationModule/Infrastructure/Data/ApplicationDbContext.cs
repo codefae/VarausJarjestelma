@@ -22,7 +22,6 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Reservation>().OwnsOne(r => r.TimeSlot);
         
         modelBuilder.Entity<Device>().HasKey(r => r.Id);
-        modelBuilder.Entity<Device>().OwnsOne(r => r.DeviceType);
         
   
     }

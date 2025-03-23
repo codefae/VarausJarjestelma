@@ -12,8 +12,11 @@ public class GetAvailableRoomsMapper : ResponseMapper<GetAvailableRoomsResponse,
         return new GetAvailableRoomsResponse
         {
             AvailableRooms = rooms.Select(room =>
-                (HttpUtility.HtmlEncode(room.Id.ToString()),
-                    HttpUtility.HtmlEncode(room.Name))).ToList()
+                new RoomDetails
+                {
+                    RoomId = HttpUtility.HtmlEncode(room.Id.ToString()),
+                    RoomName = HttpUtility.HtmlEncode(room.Name)
+                }).ToList()
         };
     }
 }
