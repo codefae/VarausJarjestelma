@@ -6,7 +6,7 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom;
 
 public class PostDeviceToRoomEndpoint(
-    IRoomRepository roomRepository,
+    IUnitOfWork unitOfWork,
     ILogger<PostDeviceToRoomEndpoint> logger)
     : EndpointWithMapper<PostDeviceToRoomRequest, PostDeviceToRoomMapper>
 {
@@ -25,15 +25,25 @@ public class PostDeviceToRoomEndpoint(
 
         var device = Map.ToEntity(req);
 
-        var room = await roomRepository.GetRoomByIdAsync(roomId, ct);
+        await unitOfWork.BeginTransactionAsync();
+        var room = await unitOfWork.Rooms.GetRoomByIdAsync(roomId, ct);
         if (room == null)
+        {
+            await unitOfWork.RollbackTransactionAsync();
             return TypedResults.NotFound("Room not found!");
-        
+
+        }
+
         if (room.Devices.Any(d => d.Name == device.Name))
+        {
+            await unitOfWork.RollbackTransactionAsync();
             return TypedResults.Problem("A device with the same name already exists in the room!");
+        }
         
         room.Devices.Add(device);
-        await roomRepository.UpdateRoomAsync(room, ct);
+        await unitOfWork.Rooms.UpdateRoomAsync(room, ct);
+        await unitOfWork.CommitTransactionAsync();
+        
         return TypedResults.Ok("Device added to room successfully.");
     }
 }

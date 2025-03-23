@@ -32,11 +32,11 @@ mockReservationRepository.Setup(repo => repo.GetAllAsync(cancellationToken))
     });
 
 // Setup AddAndMakeSureRoomIsNotChangedAsync method
-mockReservationRepository.Setup(repo => repo.AddAndMakeSureRoomIsNotChangedAsync(It.IsAny<Reservation>(), cancellationToken))
+mockReservationRepository.Setup(repo => repo.AddAsync(It.IsAny<Reservation>(), cancellationToken))
     .Returns(Task.CompletedTask);
 
 // Setup UpdateAsync method
-mockReservationRepository.Setup(repo => repo.UpdateAndMakeSureRoomIsNotChangedAsync(It.IsAny<Reservation>(), cancellationToken))
+mockReservationRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Reservation>(), cancellationToken))
     .Returns(Task.CompletedTask);
 
 // Setup DeleteAsync method

@@ -20,9 +20,9 @@ public interface IReservationRepository
     /// <param name="reservation"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    Task AddAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
+    Task AddAsync(Reservation reservation, CancellationToken cancellationToken);
 
-    Task UpdateAndMakeSureRoomIsNotChangedAsync(Reservation reservation, CancellationToken cancellationToken);
+    Task UpdateAsync(Reservation reservation, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(Guid reservationId, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date, CancellationToken cancellationToken);

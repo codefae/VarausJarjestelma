@@ -10,9 +10,8 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 namespace src.Modules.ReservationModule.Features.PatchReservation;
 
 public class PatchReservationEndPoint(
-    IReservationRepository reservationRepository,
-    IRoomRepository roomRepository,
     IBookingDomainService bookingDomainService,
+    IUnitOfWork unitOfWork,
     ILogger<PatchReservationEndPoint> logger)
     : Endpoint<
         PatchReservationRequest,
@@ -30,51 +29,40 @@ public class PatchReservationEndPoint(
     {
         var reservationId = Guid.Parse(req.ReservationId);
 
-        var retries = 3;
-        while (retries-- > 0)
+        await unitOfWork.BeginTransactionAsync();
+
+        var reservation = await unitOfWork.Reservations.GetAsync(reservationId, ct);
+        if (reservation == null)
         {
-            var reservation = await reservationRepository.GetAsync(reservationId, ct);
-            if (reservation == null)
-            {
-                return TypedResults.NotFound("Reservation not found!");
-            }
-
-            var room = await roomRepository.GetRoomByIdAsync(reservation.RoomId, ct);
-            if (room == null)
-            {
-                return TypedResults.NotFound("Room not found!");
-            }
-
-            var reservations = 
-                (await reservationRepository.GetByRoomAsync(room.Id, ct))
-                .Where(x => x.Id != reservation.Id);
-            
-            reservation.ChangeReservationTime(req.Day,req.TimeSlotDto.StartTime, req.TimeSlotDto.EndTime);
-            var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
-
-            switch (result)
-            {
-                case ValidateReservationResult.Success:
-                    try
-                    {
-                        await reservationRepository.UpdateAndMakeSureRoomIsNotChangedAsync(reservation, ct);
-                        return TypedResults.Ok("Reservation updated successfully.");
-                    }
-                    catch (DbUpdateConcurrencyException e)
-                    {
-                        logger.LogInformation(
-                            "Concurrency exception occurred while updating the reservation, retrying...");
-                    }
-                    break;
-                case ValidateReservationResult.ReservationConflicts:
-                    return TypedResults.Problem("Reservation conflicts with other reservations!");
-                case ValidateReservationResult.DeviceNotFound:
-                    return TypedResults.NotFound("Device not found!");
-                case ValidateReservationResult.RoomNotOpen:
-                    return TypedResults.Problem("Room is not open!");
-            }
+            return TypedResults.NotFound("Reservation not found!");
         }
 
-        return TypedResults.Problem("Many people try to update reservations at the same time, try again later!");
+        var room = await unitOfWork.Rooms.GetRoomByIdAsync(reservation.RoomId, ct);
+        if (room == null)
+        {
+            return TypedResults.NotFound("Room not found!");
+        }
+
+        var reservations =
+            (await unitOfWork.Reservations.GetByRoomAsync(room.Id, ct))
+            .Where(x => x.Id != reservation.Id);
+
+        reservation.ChangeReservationTime(req.Day, req.TimeSlotDto.StartTime, req.TimeSlotDto.EndTime);
+        var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
+
+        switch (result)
+        {
+            case ValidateReservationResult.Success:
+                await unitOfWork.Reservations.UpdateAsync(reservation, ct);
+                return TypedResults.Ok("Reservation updated successfully.");
+            case ValidateReservationResult.ReservationConflicts:
+                return TypedResults.Problem("Reservation conflicts with other reservations!");
+            case ValidateReservationResult.DeviceNotFound:
+                return TypedResults.NotFound("Device not found!");
+            case ValidateReservationResult.RoomNotOpen:
+                return TypedResults.Problem("Room is not open!");
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

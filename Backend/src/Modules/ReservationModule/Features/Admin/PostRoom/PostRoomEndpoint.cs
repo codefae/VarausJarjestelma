@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostRoom;
 
-public class PostRoomEndpoint(IRoomRepository roomRepository)
+public class PostRoomEndpoint(IUnitOfWork unitOfWork)
     : Endpoint<PostRoomRequest, Results<Ok, Conflict<string>, ProblemHttpResult>, PostRoomMapper>
 {
     public override void Configure()
@@ -21,13 +21,19 @@ public class PostRoomEndpoint(IRoomRepository roomRepository)
     public override async Task<Results<Ok, Conflict<string>, ProblemHttpResult>> HandleAsync(PostRoomRequest req,
         CancellationToken ct)
     {
-        var rooms = await roomRepository.GetRoomsAsync(ct);
-        if (rooms.Any(r => r.Name == req.Name))
-            return TypedResults.Conflict("Room with the same name already exists");
+        await unitOfWork.BeginTransactionAsync();
         
-
+        var rooms = await unitOfWork.Rooms.GetRoomsAsync(ct);
+        if (rooms.Any(r => r.Name == req.Name))
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            return TypedResults.Conflict("Room with the same name already exists");
+        }
+        
         var room = Map.ToEntity(req);
-        await roomRepository.AddRoomAsync(room, ct);
+        await unitOfWork.Rooms.AddRoomAsync(room, ct);
+        await unitOfWork.CommitTransactionAsync();
+        
         return TypedResults.Ok();
     }
 }

@@ -1,9 +1,9 @@
 namespace src.Modules.ReservationModule.Shared.Interfaces;
 
-public interface IUnitOfWork<T> : IDisposable 
+public interface IUnitOfWork : IDisposable 
 {
-    IReservationRepository ReservationRepository { get; }
-    IRoomRepository SomeEntities { get; }
+    IReservationRepository Reservations{ get; }
+    IRoomRepository Rooms { get; }
     Task BeginTransactionAsync();
     Task CommitTransactionAsync();
     Task RollbackTransactionAsync();
