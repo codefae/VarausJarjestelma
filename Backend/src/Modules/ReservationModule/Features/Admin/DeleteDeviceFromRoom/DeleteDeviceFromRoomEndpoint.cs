@@ -10,7 +10,7 @@ public class DeleteDeviceFromRoomEndpoint : Endpoint<DeleteDeviceFromRoomRequest
        Delete("/room/{roomId}/device/{deviceId}");
     }
 
-    public override Task HandleAsync(DeleteDeviceFromRoomRequest req, CancellationToken ct)
+    public override Task<Results<Ok, NotFound>> ExecuteAsync(DeleteDeviceFromRoomRequest req, CancellationToken ct)
     {
         throw new NotImplementedException();
     }

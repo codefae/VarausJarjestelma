@@ -11,9 +11,10 @@ namespace src.Modules.ReservationModule.Features.PostReservation;
 
 public class PostReservationEndPoint(
     IBookingDomainService bookingDomainService,
-    IUnitOfWork unitOfWork,
-    ILogger<PostReservationEndPoint> logger)
-    : EndpointWithMapper<PostReservationRequest, PostReservationMapper>
+    IUnitOfWork unitOfWork)
+    : Endpoint<PostReservationRequest, 
+        Results<NotFound<string>, Ok<string>, ProblemHttpResult>,
+        PostReservationMapper>
 {
     public override void Configure()
     {
@@ -22,7 +23,7 @@ public class PostReservationEndPoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<NotFound<string>, Ok<string>, ProblemHttpResult>> HandleAsync(
+    public override async Task<Results<NotFound<string>, Ok<string>, ProblemHttpResult>> ExecuteAsync(
         PostReservationRequest req, CancellationToken ct)
     {
         var reservation = Map.ToEntity(req);

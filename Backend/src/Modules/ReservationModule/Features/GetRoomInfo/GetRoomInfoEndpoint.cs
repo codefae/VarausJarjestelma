@@ -17,7 +17,7 @@ public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, I
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<GetRoomInfoResponse>, ProblemHttpResult>> HandleAsync(CancellationToken ct)
+    public override async Task<Results<Ok<GetRoomInfoResponse>, ProblemHttpResult>> ExecuteAsync(CancellationToken ct)
     {
         var roomId = Route<Guid>("RoomId");
         var roomTask = roomRepository.GetRoomByIdAsync(roomId, ct);

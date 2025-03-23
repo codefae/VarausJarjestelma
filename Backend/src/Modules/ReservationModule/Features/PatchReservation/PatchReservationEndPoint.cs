@@ -15,7 +15,7 @@ public class PatchReservationEndPoint(
     ILogger<PatchReservationEndPoint> logger)
     : Endpoint<
         PatchReservationRequest,
-        Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>>>
+        Results<Ok<string>, NotFound<string>, ProblemHttpResult>>
 {
     public override void Configure()
     {
@@ -24,7 +24,7 @@ public class PatchReservationEndPoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>> HandleAsync(
+    public override async Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>> ExecuteAsync(
         PatchReservationRequest req, CancellationToken ct)
     {
         var reservationId = Guid.Parse(req.ReservationId);
