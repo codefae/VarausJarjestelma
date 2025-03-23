@@ -11,13 +11,13 @@
         <PackageReference Include="FastEndpoints" Version="5.34.0" />
         <PackageReference Include="FastEndpoints.Swagger" Version="5.34.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3" />
         <PackageReference Include="Moq" Version="4.20.72" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Modules\ReservationModule\Features\Admin\PatchOpenRulesForRoom\" />
-      <Folder Include="Modules\ReservationModule\Infrastructure\" />
       <Folder Include="Modules\ReservationModule\Shared\EndPointGroups\" />
     </ItemGroup>
 </Project>

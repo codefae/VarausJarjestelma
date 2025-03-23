@@ -1,10 +1,12 @@
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using src.Modules.ReservationModule.Domain.DomainServices;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
+using src.Modules.ReservationModule.Infrastructure.Data;
 using src.Modules.ReservationModule.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,6 +103,9 @@ mockRoomRepository.Setup(repo => repo.DeleteRoomAsync(It.IsAny<Room>(), cancella
 // Use the mock object
 var roomRepository = mockRoomRepository.Object;
 #endregion
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddTransient<IRoomRepository>(sp => roomRepository);
 builder.Services.AddTransient<IReservationRepository>(sp => reservationRepository);
