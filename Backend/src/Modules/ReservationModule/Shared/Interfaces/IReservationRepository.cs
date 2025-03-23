@@ -2,7 +2,7 @@ using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 
 namespace src.Modules.ReservationModule.Shared.Interfaces;
 
-public interface IReservationRepository
+public interface IReservationRepository 
 {
     /// <summary>
     /// Get a reservation by its id
