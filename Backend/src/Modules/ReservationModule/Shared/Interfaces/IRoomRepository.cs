@@ -15,5 +15,5 @@ public interface IRoomRepository
     Task<IEnumerable<Room>> GetRoomsAsync(CancellationToken cancellationToken);
     Task AddRoomAsync(Room room, CancellationToken cancellationToken);
     Task UpdateRoomAsync(Room room, CancellationToken cancellationToken);
-    Task DeleteRoomAsync(Room room, CancellationToken cancellationToken);
+    Task<bool> DeleteRoomAsync(Guid id, CancellationToken cancellationToken);
 }

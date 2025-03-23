@@ -21,9 +21,15 @@ public class RoomRepository(ApplicationDbContext context) :IRoomRepository
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task DeleteRoomAsync(Room room, CancellationToken cancellationToken)
+    public async Task<bool> DeleteRoomAsync(Guid id, CancellationToken cancellationToken)
     {
+        var room = await context.Rooms.FindAsync([id], cancellationToken).ConfigureAwait(false);;
+        if(room == null)
+            return false;
+        
         context.Rooms.Remove(room);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        
+        return true;
     }
 }

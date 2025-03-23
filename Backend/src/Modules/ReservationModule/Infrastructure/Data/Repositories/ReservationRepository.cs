@@ -21,10 +21,16 @@ public class ReservationRepository(ApplicationDbContext context) : IReservationR
         return context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<bool> DeleteAsync(Guid reservationId, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(Guid reservationId, CancellationToken cancellationToken)
     {
-        context.Reservations.Remove(context.Reservations.Find(reservationId));
-        context.SaveChangesAsync(cancellationToken);
+        var reservation = await context.Reservations.FindAsync([reservationId], cancellationToken);
+        if (reservation == null)
+            return false;
+        
+        context.Reservations.Remove(reservation);
+        await context.SaveChangesAsync(cancellationToken);
+        
+        return true;
     }
 
     public Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken)
