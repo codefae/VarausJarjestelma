@@ -26,8 +26,7 @@ public class PostReservationEndPoint(
         PostReservationRequest req, CancellationToken ct)
     {
         var reservation = Map.ToEntity(req);
-
-        await  unitOfWork.BeginTransactionAsync();
+        await unitOfWork.BeginTransactionAsync();
 
         // Io logic
         var roomTask = unitOfWork.Rooms.GetRoomByIdAsync(reservation.RoomId, ct);

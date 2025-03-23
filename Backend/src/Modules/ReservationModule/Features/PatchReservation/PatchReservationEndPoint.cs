@@ -29,7 +29,7 @@ public class PatchReservationEndPoint(
     {
         var reservationId = Guid.Parse(req.ReservationId);
 
-        await unitOfWork.BeginTransactionAsync();
+        using var _ = unitOfWork.BeginTransactionAsync();
 
         var reservation = await unitOfWork.Reservations.GetAsync(reservationId, ct);
         if (reservation == null)
