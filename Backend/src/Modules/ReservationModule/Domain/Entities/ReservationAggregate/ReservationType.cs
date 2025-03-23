@@ -17,6 +17,10 @@ public class RoomReservation : ReservationType
 public class EventReservation : ReservationType
 {
     public Guid EventId { get; init; }
+    // Parameterless constructor for EF Core
+    public EventReservation()
+    {
+    }
 
     public EventReservation(Guid eventId)
     {
@@ -27,6 +31,11 @@ public class EventReservation : ReservationType
 public class DeviceReservation : ReservationType
 {
     public Guid DeviceId { get; init; }
+
+// Parameterless constructor for EF Core
+    public DeviceReservation()
+    {
+    }
 
     public DeviceReservation(Guid deviceId)
     {

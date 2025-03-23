@@ -5,6 +5,9 @@ public class TimeSlot
     public TimeSpan StartTime { get; }
     public TimeSpan EndTime { get; }
 
+    // Parameterless constructor for EF Core
+    public TimeSlot() { }
+    
     public TimeSlot(TimeSpan startTime, TimeSpan endTime)
     {
         if (startTime < TimeSpan.Zero)

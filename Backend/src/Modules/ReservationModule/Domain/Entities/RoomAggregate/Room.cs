@@ -11,6 +11,13 @@ public class Room : IAggregateRoot
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public Room()
+    {
+    }
+#pragma warning restore CS8618, CS9264
+
     public Room(string name, DateTime defaultOpenDate, DateTime defaultCloseDate, Guid? id = null)
     {
         Id = id ?? Guid.NewGuid();
@@ -37,7 +44,7 @@ public class Room : IAggregateRoot
 
     public bool IsDeviceWithIdInDevicesList(Guid id) =>
         Devices.Any(device => device.Id == id);
-    
+
     public bool AddDevice(string name, string deviceType, string description)
     {
         var newDevice = new Device(name, deviceType, description);

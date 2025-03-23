@@ -11,10 +11,15 @@ public class Reservation : IAggregateRoot
     public Guid RoomId { get; }
     public ReservationType ReservationType { get; }
     public DateTime Day { get; private set; }
-    public TimeSlot TimeSlot { get;  private set; }
+    public TimeSlot TimeSlot { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
-
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public Reservation()
+    {
+    }
+#pragma warning restore CS8618, CS9264
     /// <summary>
     /// Creates a reservation.
     /// If eventId is set, it is an event reservation, if eventId is not set, but deviceId is set it is a Device reservation.
@@ -47,7 +52,7 @@ public class Reservation : IAggregateRoot
             reservationType = new DeviceReservation(deviceId.Value);
         else
             reservationType = new RoomReservation();
-        
+
         Id = Guid.NewGuid();
         UserId = userId;
         RoomId = roomId;
@@ -60,19 +65,19 @@ public class Reservation : IAggregateRoot
 
     public bool IsConflicting(
         ReadOnlyDictionary<DayOfWeek, TimeSlot> openTimesWeekDays,
-        ReadOnlyDictionary<DateTime, TimeSlot>  exceptionsToWeekDayRulesReadOnly ,
+        ReadOnlyDictionary<DateTime, TimeSlot> exceptionsToWeekDayRulesReadOnly,
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
         if (Day > defaultOpenDate || Day < defaultClosingDate)
             return true;
 
-        var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly 
+        var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly
             .Where(dateTimeSlot => dateTimeSlot.Key == Day)
             .Select(x => x.Value)
             .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
             .ToList();
-        
+
         var openTimesWeekdaysConflicts = openTimesWeekDays
             .Where(openTimeWeekDay => openTimeWeekDay.Key == Day.DayOfWeek)
             .Select(openTimeWeekDay => openTimeWeekDay.Value)
@@ -81,7 +86,7 @@ public class Reservation : IAggregateRoot
 
         return closedOnTimeSlotsConflicts.Count != 0 || openTimesWeekdaysConflicts.Count != 0;
     }
-    
+
     public List<Reservation> GetConflicts(List<Reservation> otherReservations)
     {
         return otherReservations.Where(reservation =>
@@ -98,12 +103,12 @@ public class Reservation : IAggregateRoot
         newEndTime = RoundToNearest15Minutes(newEndTime);
 
         ValidateStartTimeIsInFuture(day, newStartTime);
-        
+
         Day = day;
         TimeSlot = new TimeSlot(newStartTime, newEndTime);
         UpdatedAt = DateTime.Now;
     }
-    
+
     private static TimeSpan RoundToNearest15Minutes(TimeSpan time)
     {
         var minutes = (int)Math.Round(time.TotalMinutes / 15.0) * 15;
@@ -112,9 +117,9 @@ public class Reservation : IAggregateRoot
 
     private static void ValidateStartTimeIsInFuture(DateTime day, TimeSpan startTime)
     {
-        if(day.Day <= DateTime.Now.Day)
+        if (day.Day <= DateTime.Now.Day)
             throw new ArgumentException("Start day must be today or in the future.");
-        if (day.Day == DateTime.Now.Day && startTime< DateTime.Now.TimeOfDay)
+        if (day.Day == DateTime.Now.Day && startTime < DateTime.Now.TimeOfDay)
             throw new ArgumentException("Start time must be in the future.");
     }
 }

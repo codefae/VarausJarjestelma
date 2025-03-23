@@ -8,13 +8,23 @@ public class OpenRules
     /// The values that are before current date need to be archived or deleted on a backround job for the db
     /// </summary>
     private Dictionary<DateTime, TimeSlot> _exceptionsToWeekDayRules;
-    public ReadOnlyDictionary<DateTime, TimeSlot> ExceptionsToWeekDayRulesReadOnly => _exceptionsToWeekDayRules.AsReadOnly();
+
+    public ReadOnlyDictionary<DateTime, TimeSlot> ExceptionsToWeekDayRulesReadOnly =>
+        _exceptionsToWeekDayRules.AsReadOnly();
+
     public DateTime DefaultOpenDate { get; private set; }
     public DateTime DefaultCloseDate { get; private set; }
     private Dictionary<DayOfWeek, TimeSlot> _defaultOpenTimesForWeek;
     public ReadOnlyDictionary<DayOfWeek, TimeSlot> DefaultOpenTimesForWeek => _defaultOpenTimesForWeek.AsReadOnly();
-    public DateTime UpdatedAt { get; private set; } 
-    
+    public DateTime UpdatedAt { get; private set; }
+
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public OpenRules()
+    {
+    }
+#pragma warning restore CS8618, CS9264
+
     public OpenRules(
         DateTime defaultOpenDate,
         DateTime defaultCloseDate)
@@ -47,7 +57,7 @@ public class OpenRules
         DefaultCloseDate = defaultCloseDate;
         UpdatedAt = DateTime.Now;
     }
-    
+
     public void AddOrChangeExceptionsToWeekDayRules(DateTime date, TimeSpan startTime, TimeSpan endTime)
     {
         _exceptionsToWeekDayRules[date] = new TimeSlot(startTime, endTime);
@@ -62,12 +72,12 @@ public class OpenRules
             UpdatedAt = DateTime.Now;
         }
     }
-    
+
     public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
     {
         if (!_defaultOpenTimesForWeek.ContainsKey(dayOfWeek))
             throw new ArgumentException("Invalid day of the week");
-        
+
         _defaultOpenTimesForWeek[dayOfWeek] = new TimeSlot(startTime, endTime);
 
         UpdatedAt = DateTime.Now;
