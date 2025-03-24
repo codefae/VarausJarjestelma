@@ -13,10 +13,6 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
     GetAvailableRoomsMapper
 >
 {
-    private readonly IRoomRepository _roomRepository =
-        roomRepository ?? throw new ArgumentNullException(nameof(roomRepository));
-
-
     public override void Configure()
     {
         Get("/rooms");
@@ -26,7 +22,7 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
     public override async Task<Results<Ok<GetAvailableRoomsResponse>, NotFound>> HandleAsync(
         CancellationToken ct)
     {
-        var rooms = (await _roomRepository.GetRoomsAsync(ct).ConfigureAwait(false)).ToList();
+        var rooms = (await roomRepository.GetRoomsAsync(ct).ConfigureAwait(false)).ToList();
         if (rooms.Count == 0)
         {
             return TypedResults.NotFound();
