@@ -1,10 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.DomainServices.ResultEnums;
-using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
-using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Interfaces;
 
 namespace src.Modules.ReservationModule.Features.PostReservation;
@@ -27,10 +24,9 @@ public class PostReservationEndPoint(
         PostReservationRequest req, CancellationToken ct)
     {
         var reservation = Map.ToEntity(req);
-        await unitOfWork.BeginTransactionAsync();
+        await unitOfWork.BeginTransactionAsync(ct);
 
-        // Io logic
-        var roomTask = unitOfWork.Rooms.GetRoomByIdAsync(reservation.RoomId, ct);
+        var roomTask = unitOfWork.Rooms.GetAsync(reservation.RoomId, ct);
         var reservationsTask = unitOfWork.Reservations.GetByRoomAndDateAsync(
             reservation.RoomId,
             reservation.Day,
@@ -42,31 +38,27 @@ public class PostReservationEndPoint(
         var reservations = await reservationsTask;
 
         if (room == null)
-        {
             return TypedResults.NotFound("Room not found!");
-        }
 
-        // Business Logc
         var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
 
-        // Io logic
         switch (result)
         {
             case ValidateReservationResult.Success:
                 await unitOfWork.Reservations.AddAsync(reservation, ct);
-                await unitOfWork.CommitTransactionAsync();
+                await unitOfWork.CommitTransactionAsync(ct);
                 return TypedResults.Ok("Reservation created successfully.");
             case ValidateReservationResult.ReservationConflicts:
-                await unitOfWork.RollbackTransactionAsync();
+                await unitOfWork.RollbackTransactionAsync(ct);
                 return TypedResults.Problem("Reservation conflicts with other reservations!");
             case ValidateReservationResult.DeviceNotFound:
-                await unitOfWork.RollbackTransactionAsync();
+                await unitOfWork.RollbackTransactionAsync(ct);
                 return TypedResults.NotFound("Device not found!");
             case ValidateReservationResult.RoomNotOpen:
-                await unitOfWork.RollbackTransactionAsync();
+                await unitOfWork.RollbackTransactionAsync(ct);
                 return TypedResults.Problem("Room is not open!");
             default:
-                await unitOfWork.RollbackTransactionAsync();
+                await unitOfWork.RollbackTransactionAsync(ct);
                 throw new ArgumentOutOfRangeException();
         }
     }

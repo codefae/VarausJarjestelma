@@ -35,9 +35,9 @@ public class PostReservationMapper : RequestMapper<PostReservationRequest, Reser
         return new Reservation(
             userId,
             roomId,
-            r.ReservationDto.StartTime.Date,
-            r.ReservationDto.StartTime.TimeOfDay,
-            r.ReservationDto.EndTime.TimeOfDay,
+            r.ReservationDto.Day,
+            r.ReservationDto.TimeSlot.StartTime,
+            r.ReservationDto.TimeSlot.EndTime,
             deviceId: deviceId,
             eventId: null 
             // eventId: eventId == Guid.Empty ? null : eventId

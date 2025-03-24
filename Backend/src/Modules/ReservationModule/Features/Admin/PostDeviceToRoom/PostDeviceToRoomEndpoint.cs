@@ -26,24 +26,24 @@ public class PostDeviceToRoomEndpoint(
             throw new ArgumentException("Invalid room id format!");
 
         var device = Map.ToEntity(req);
-
-        await unitOfWork.BeginTransactionAsync();
-        var room = await unitOfWork.Rooms.GetRoomByIdAsync(roomId, ct);
+        await unitOfWork.BeginTransactionAsync(ct);
+        
+        var room = await unitOfWork.Rooms.GetAsync(roomId, ct);
         if (room == null)
         {
-            await unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync(ct);
             return TypedResults.NotFound("Room not found!");
         }
 
         if (room.Devices.Any(d => d.Name == device.Name))
         {
-            await unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync(ct);
             return TypedResults.Problem("A device with the same name already exists in the room!");
         }
 
         room.Devices.Add(device);
         await unitOfWork.Rooms.UpdateRoomAsync(room, ct);
-        await unitOfWork.CommitTransactionAsync();
+        await unitOfWork.CommitTransactionAsync(ct);
 
         return TypedResults.Ok("Device added to room successfully.");
     }

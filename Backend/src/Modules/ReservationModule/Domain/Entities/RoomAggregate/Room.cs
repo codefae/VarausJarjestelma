@@ -2,12 +2,12 @@ using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 
 namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
-public class Room : IAggregateRoot
+public class Room 
 {
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public OpenRules OpenRules { get; }
-    public List<Device> Devices { get; private set; }
+    public List<Device> Devices { get; private set; } = [];
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 

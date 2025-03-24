@@ -7,20 +7,21 @@ namespace src.Modules.ReservationModule.Features.GetRoomInfo;
 public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, IRoomRepository roomRepository)
     : EndpointWithoutRequest
     <
-        Results<Ok<GetRoomInfoResponse>, ProblemHttpResult>,
+        Results<Ok<GetRoomInfoResponse>, NotFound<string>>,
         GetRoomInfoMapper
     >
 {
     public override void Configure()
     {
-        Get("/rooms/{RoomId}/info");
+        Get("/rooms/{roomId}/info");
         AllowAnonymous();
     }
 
-    public override async Task<Results<Ok<GetRoomInfoResponse>, ProblemHttpResult>> ExecuteAsync(CancellationToken ct)
+    public override async Task<Results<Ok<GetRoomInfoResponse>,NotFound<string>>> ExecuteAsync(CancellationToken ct)
     {
-        var roomId = Route<Guid>("RoomId");
-        var roomTask = roomRepository.GetRoomByIdAsync(roomId, ct);
+        var roomId = Route<Guid>("roomId");
+        
+        var roomTask = roomRepository.GetAsync(roomId, ct);
         var reservationsTask = reservationRepository.GetByRoomAsync(roomId, ct);
 
         await Task.WhenAll(roomTask, reservationsTask);
@@ -30,7 +31,7 @@ public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, I
 
         if (room == null)
         {
-            return TypedResults.Problem("Room not found");
+            return TypedResults.NotFound("Room not found");
         }
 
         var getRoomInfoResponse = Map.FromEntity((reservations.ToList(), room));

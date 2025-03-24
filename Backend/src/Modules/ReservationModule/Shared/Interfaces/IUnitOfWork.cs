@@ -4,7 +4,7 @@ public interface IUnitOfWork : IDisposable
 {
     IReservationRepository Reservations{ get; }
     IRoomRepository Rooms { get; }
-    Task BeginTransactionAsync();
-    Task CommitTransactionAsync();
-    Task RollbackTransactionAsync();
+    Task BeginTransactionAsync(CancellationToken cancellationToken);
+    Task CommitTransactionAsync(CancellationToken cancellationToken);
+    Task RollbackTransactionAsync(CancellationToken cancellationToken);
 }

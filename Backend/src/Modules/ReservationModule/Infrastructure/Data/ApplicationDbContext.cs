@@ -1,4 +1,6 @@
+using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using src.Modules.ReservationModule.Domain.Entities;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
@@ -15,18 +17,20 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<Room>().HasKey(r => r.Id);
-        modelBuilder.Entity<Room>().OwnsOne(r => r.OpenRules);
-        
-        modelBuilder.Entity<Reservation>().HasKey(r => r.Id);
-        modelBuilder.Entity<Reservation>().OwnsOne(r => r.TimeSlot);
-        
-        modelBuilder.Entity<Device>().HasKey(r => r.Id);
-        
-  
+
+        // Configure the entity that owns OpenRules (assuming it's 'Room')
+        modelBuilder.Entity<Room>(entity =>
+        {
+            // Configure OpenRules as an owned entity
+            entity.OwnsOne(r => r.OpenRules, owned =>
+            {
+                owned.Property(o => o.ExceptionsToWeekDayRulesReadOnly).HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<ReadOnlyDictionary<DateTime, TimeSlot>>(v));
+            });
+        });
     }
 
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
 }
-

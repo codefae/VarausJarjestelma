@@ -6,7 +6,7 @@ namespace src.Modules.ReservationModule.Infrastructure.Data.Repositories;
 
 public class RoomRepository(ApplicationDbContext context) :IRoomRepository
 {
-    public async Task<Room?> GetRoomByIdAsync(Guid id, CancellationToken cancellationToken) =>
+    public async Task<Room?> GetAsync(Guid id, CancellationToken cancellationToken) =>
         await context.Rooms.FindAsync([id], cancellationToken).ConfigureAwait(false);
 
     public async Task<IEnumerable<Room>> GetRoomsAsync(CancellationToken cancellationToken) => 

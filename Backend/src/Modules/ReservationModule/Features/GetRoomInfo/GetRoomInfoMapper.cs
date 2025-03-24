@@ -1,5 +1,6 @@
 using System.Web;
 using FastEndpoints;
+using src.Modules.ReservationModule.Domain.Entities;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Dtos;
@@ -25,8 +26,8 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             Id = x.Id.ToString(),
             RoomId = x.RoomId.ToString(),
             ReservationType = x.ReservationType.Type,
-            StartTime =x.Day.AddMinutes(x.TimeSlot.StartTime.Minutes),
-            EndTime = x.Day.AddMinutes(x.TimeSlot.EndTime.Minutes),
+            Day = x.Day,
+            TimeSlot = x.TimeSlot,
             DeviceId = x.ReservationType is DeviceReservation deviceReservation ? deviceReservation.DeviceId.ToString() : null,
             // TODO This is for the event feature
             // EventId = x.ReservationType is EventReservation eventReservation ? eventReservation.EventId.ToString() : null

@@ -1,19 +1,23 @@
 using System.Collections.ObjectModel;
+using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 namespace src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 
 // TODO The values that are before current date need to be archived or deleted on a backround job for the db.
 
-public class Reservation : IAggregateRoot
+public class Reservation 
 {
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
     public Guid UserId { get; }
-    public Guid RoomId { get; }
+    
     public ReservationType ReservationType { get; }
     public DateTime Day { get; private set; }
     public TimeSlot TimeSlot { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
+    
+    public Guid RoomId { get; private set; }
+    public Room Room { get; private set; } = null!;
     // Parameterless constructor for EF Core
 #pragma warning disable CS8618, CS9264
     public Reservation()
@@ -39,7 +43,8 @@ public class Reservation : IAggregateRoot
         TimeSpan startTime,
         TimeSpan endTime,
         Guid? eventId = null,
-        Guid? deviceId = null)
+        Guid? deviceId = null,
+        Guid? id = null)
     {
         RoundToNearest15Minutes(startTime);
         RoundToNearest15Minutes(endTime);
@@ -53,7 +58,7 @@ public class Reservation : IAggregateRoot
         else
             reservationType = new RoomReservation();
 
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.NewGuid();
         UserId = userId;
         RoomId = roomId;
         Day = day.Date;
