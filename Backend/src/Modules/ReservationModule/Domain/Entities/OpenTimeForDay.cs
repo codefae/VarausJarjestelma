@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace src.Modules.ReservationModule.Domain.Entities;
 
+[Owned]
 public class OpenTimeForDay
 {
     public DateTime Day{ get; private set; }

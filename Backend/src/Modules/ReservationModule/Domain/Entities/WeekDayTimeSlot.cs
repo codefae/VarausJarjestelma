@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace src.Modules.ReservationModule.Domain.Entities;
 
+[Owned]
 public class WeekDayTimeSlot
 {
     public DayOfWeek DayOfWeek { get; private set; }

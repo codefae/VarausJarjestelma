@@ -8,12 +8,12 @@ namespace src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 public class Reservation 
 {
     public Guid Id { get; private set; }
-    public Guid UserId { get; }
+    public Guid UserId { get; private set; }
     
-    public ReservationType ReservationType { get; }
+    public ReservationDetails ReservationDetails { get; private set; }
     public DateTime Day { get; private set; }
     public TimeSlot TimeSlot { get; private set; }
-    public DateTime CreatedAt { get; }
+    public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     
     public Guid RoomId { get; private set; }
@@ -50,20 +50,20 @@ public class Reservation
         RoundToNearest15Minutes(endTime);
         ValidateStartTimeIsInFuture(day, startTime);
 
-        ReservationType reservationType;
+        ReservationDetails reservationDetails;
         if (eventId.HasValue && eventId != Guid.Empty)
-            reservationType = new EventReservation(eventId.Value);
+            reservationDetails = new ReservationDetails(ReservationType.EventReservation, eventId:eventId.Value);
         else if (deviceId.HasValue && deviceId != Guid.Empty)
-            reservationType = new DeviceReservation(deviceId.Value);
+            reservationDetails = new ReservationDetails(ReservationType.DeviceReservation, deviceId: deviceId.Value);
         else
-            reservationType = new RoomReservation();
+            reservationDetails = new ReservationDetails(ReservationType.RoomReservation);
 
         Id = id ?? Guid.NewGuid();
         UserId = userId;
         RoomId = roomId;
         Day = day.Date;
         TimeSlot = new TimeSlot(startTime, endTime);
-        ReservationType = reservationType;
+        ReservationDetails = reservationDetails;
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }

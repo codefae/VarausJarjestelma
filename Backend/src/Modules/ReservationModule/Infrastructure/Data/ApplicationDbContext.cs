@@ -16,55 +16,20 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<ReservationType>()
-            .HasNoKey()
-            .UseTphMappingStrategy() // Use Table-Per-Hierarchy mapping
-            .HasDiscriminator<string>("ReservationType")
-            .HasValue<RoomReservation>("RoomReservation")
-            .HasValue<EventReservation>("EventReservation")
-            .HasValue<DeviceReservation>("DeviceReservation");
-
-        modelBuilder.Entity<EventReservation>()
-            .Property(e => e.EventId)
-            .IsRequired();
-
-        modelBuilder.Entity<DeviceReservation>()
-            .Property(d => d.DeviceId)
-            .IsRequired();
-    
-        // Configure the entity that owns OpenRules (assuming it's 'Room')
-
-        
-        
+        // Configure DefaultOpenTimesForWeek to own WeekDayTimeSlot
         modelBuilder.Entity<Room>()
-            .OwnsOne(r => r.OpenRules, owned =>
+            .OwnsOne(d => d.OpenRules, openrules =>
             {
-                // Handling 'ExceptionsToWeekDayRules' as a collection of value objects
-                owned.OwnsMany(r => r.ExceptionsToWeekDayRules, exceptions =>
-                {
-                    exceptions.HasKey("OpenTimeForDay");
-                    exceptions.OwnsOne(e => e.TimeSlot);  // No need for HasNoKey() here
-                });
-
-                // Handling 'DefaultOpenTimesForWeek' as a collection of value objects
-                owned.OwnsMany(r => r.DefaultOpenTimesForWeek, days =>
-                {
-                    // Each default day has a TimeSlot
-                    days.HasKey("WeekDayTimeSlot");
-                    days.OwnsOne(d => d.TimeSlot);  // No need for HasNoKey() here
-                });
+                openrules.OwnsMany<OpenTimeForDay>(o => o.ExceptionsToWeekDayRules, exceptionsToWeekDayRules =>
+                    exceptionsToWeekDayRules.OwnsOne<TimeSlot>(t => t.TimeSlot));
+                openrules.OwnsMany<WeekDayTimeSlot>(o => o.DefaultOpenTimesForWeek, defaultOpenTimesForWeek =>
+                    defaultOpenTimesForWeek.OwnsOne<TimeSlot>(t => t.TimeSlot));
             });
 
-    
-    
-    
-    
-    
-    
-    
 
-        modelBuilder.Entity<Reservation>().OwnsOne(r => r.TimeSlot);
+        // Or configure the reverse if needed:
+        // modelBuilder.Entity<WeekDayTimeSlot>()
+        //     .OwnsOne(w => w.OpenRules);
     }
 
     public DbSet<Room> Rooms { get; set; }

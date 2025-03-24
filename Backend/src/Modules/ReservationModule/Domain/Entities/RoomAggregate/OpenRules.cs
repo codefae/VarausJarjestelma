@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices.JavaScript;
+using Microsoft.EntityFrameworkCore;
 
 namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
+[Owned]
 public class OpenRules
 {
     

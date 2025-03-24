@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace src.Modules.ReservationModule.Domain.Entities;
 
+[Owned]
 public class TimeSlot
 {
     public TimeSpan StartTime { get; private set; }
