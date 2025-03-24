@@ -37,18 +37,29 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
         {
             DefaultCloseDate = e.room.OpenRules.DefaultCloseDate,
             DefaultOpenDate = e.room.OpenRules.DefaultOpenDate,
-            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRules .ToDictionary(x => x.Key, x =>
-                new TimeSlotDto()
+            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRules
+                .Select(x => new OpenTimeForDayDto
                 {
-                    StartTime = x.TimeSlot.StartTime,
-                    EndTime = x.Value.EndTime
-                }),
-            DefaultOpenTimesForWeek = e.room.OpenRules.DefaultOpenTimesForWeek.ToDictionary(x => x.Key, x =>
-                new TimeSlotDto()
-                {
-                    StartTime = x.Value.StartTime,
-                    EndTime = x.Value.EndTime
+                    Day = x.Day,
+                    TimeSlotDto = new TimeSlotDto
+                    {
+                        StartTime = x.TimeSlot.StartTime,
+                        EndTime = x.TimeSlot.EndTime
+                    }
                 })
+                .ToList(),
+
+            DefaultOpenTimesForWeek = e.room.OpenRules.DefaultOpenTimesForWeek
+                .Select(x => new WeekDayTimeSlotDto
+                {
+                    DayOfWeek = x.DayOfWeek,
+                    TimeSlotDto = new TimeSlotDto
+                    {
+                        StartTime = x.TimeSlot.StartTime,
+                        EndTime = x.TimeSlot.EndTime
+                    }
+                })
+                .ToList()
         }
     };
 }
