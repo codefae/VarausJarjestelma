@@ -24,9 +24,7 @@ public class ApplicationDbContext : DbContext
             // Configure OpenRules as an owned entity
             entity.OwnsOne(r => r.OpenRules, owned =>
             {
-                owned.Property(o => o.ExceptionsToWeekDayRulesReadOnly).HasConversion(
-                    v => JsonConvert.SerializeObject(v),
-                    v => JsonConvert.DeserializeObject<ReadOnlyDictionary<DateTime, TimeSlot>>(v));
+                
             });
         });
     }

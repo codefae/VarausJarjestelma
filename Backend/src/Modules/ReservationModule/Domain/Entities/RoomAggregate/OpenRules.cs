@@ -1,21 +1,15 @@
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices.JavaScript;
 
 namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 public class OpenRules
 {
-    /// <summary>
-    /// The values that are before current date need to be archived or deleted on a backround job for the db
-    /// </summary>
-    private Dictionary<DateTime, TimeSlot> _exceptionsToWeekDayRules;
-
-    public ReadOnlyDictionary<DateTime, TimeSlot> ExceptionsToWeekDayRulesReadOnly =>
-        _exceptionsToWeekDayRules.AsReadOnly();
-
+    
+    public List<OpenTimeForDay> ExceptionsToWeekDayRules { get; private set; }
     public DateTime DefaultOpenDate { get; private set; }
     public DateTime DefaultCloseDate { get; private set; }
-    private Dictionary<DayOfWeek, TimeSlot> _defaultOpenTimesForWeek;
-    public ReadOnlyDictionary<DayOfWeek, TimeSlot> DefaultOpenTimesForWeek => _defaultOpenTimesForWeek.AsReadOnly();
+    public List<WeekDayTimeSlot> DefaultOpenTimesForWeek { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
     // Parameterless constructor for EF Core
@@ -33,17 +27,18 @@ public class OpenRules
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
-        _defaultOpenTimesForWeek = new Dictionary<DayOfWeek, TimeSlot>()
+        DefaultOpenTimesForWeek = new List<WeekDayTimeSlot>
         {
-            { DayOfWeek.Monday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Tuesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Wednesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Thursday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Friday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Saturday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
-            { DayOfWeek.Sunday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)) },
+            new WeekDayTimeSlot(DayOfWeek.Monday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Tuesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Wednesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Thursday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Friday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Saturday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
+            new WeekDayTimeSlot(DayOfWeek.Sunday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)))
         };
-        _exceptionsToWeekDayRules = [];
+
+        ExceptionsToWeekDayRules = [];
         UpdatedAt = DateTime.Now;
     }
 
@@ -60,25 +55,24 @@ public class OpenRules
 
     public void AddOrChangeExceptionsToWeekDayRules(DateTime date, TimeSpan startTime, TimeSpan endTime)
     {
-        _exceptionsToWeekDayRules[date] = new TimeSlot(startTime, endTime);
-
-        UpdatedAt = DateTime.Now;
+         ExceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date);
+         ExceptionsToWeekDayRules.Add(new OpenTimeForDay(date, new TimeSlot(startTime, endTime)));
+         UpdatedAt = DateTime.Now;
     }
 
-    public void RemoveExceptionsToWeekDayRules(DateTime date)
+    public bool RemoveExceptionsToWeekDayRules(DateTime date)
     {
-        if (_exceptionsToWeekDayRules.Remove(date))
-        {
-            UpdatedAt = DateTime.Now;
-        }
+        if (ExceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date) < 1)
+            return false;
+        
+        UpdatedAt = DateTime.Now;
+        return true;
     }
 
     public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
-    {
-        if (!_defaultOpenTimesForWeek.ContainsKey(dayOfWeek))
-            throw new ArgumentException("Invalid day of the week");
-
-        _defaultOpenTimesForWeek[dayOfWeek] = new TimeSlot(startTime, endTime);
+    { 
+        DefaultOpenTimesForWeek.RemoveAll(x => x.DayOfWeek == dayOfWeek);
+        DefaultOpenTimesForWeek.Add(new WeekDayTimeSlot(dayOfWeek, new TimeSlot(startTime, endTime)));
 
         UpdatedAt = DateTime.Now;
     }

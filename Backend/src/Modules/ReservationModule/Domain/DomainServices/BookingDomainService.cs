@@ -27,7 +27,7 @@ public class BookingDomainService : IBookingDomainService
 
         var isConflicting = reservation.IsConflicting(
             room.OpenRules.DefaultOpenTimesForWeek, 
-            room.OpenRules. ExceptionsToWeekDayRulesReadOnly ,
+            room.OpenRules. ExceptionsToWeekDayRules ,
             room.OpenRules.DefaultOpenDate,
             room.OpenRules.DefaultCloseDate);
         if(isConflicting)
