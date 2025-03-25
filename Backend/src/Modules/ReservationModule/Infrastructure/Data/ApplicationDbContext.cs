@@ -17,15 +17,8 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Configure DefaultOpenTimesForWeek to own WeekDayTimeSlot
-        modelBuilder.Entity<Room>()
-            .OwnsOne(d => d.OpenRules, openrules =>
-            {
-                openrules.OwnsMany<OpenTimeForDay>(o => o.ExceptionsToWeekDayRules, exceptionsToWeekDayRules =>
-                    exceptionsToWeekDayRules.OwnsOne<TimeSlot>(t => t.TimeSlot));
-                openrules.OwnsOne<WeeklySchedule>(o => o., defaultOpenTimesForWeek =>
-                    defaultOpenTimesForWeek.OwnsOne<TimeSlot>(t => t.TimeSlot));
-            });
-
+        base.OnModelCreating(modelBuilder);
+     
 
         // Or configure the reverse if needed:
         // modelBuilder.Entity<WeekDayTimeSlot>()

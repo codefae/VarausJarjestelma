@@ -69,7 +69,7 @@ public class Reservation
     }
 
     public bool IsConflicting(
-        List<WeekDayTimeSlot> openTimesWeekDays,
+        WeeklySchedule openTimesWeekDays,
         List<OpenTimeForDay> exceptionsToWeekDayRulesReadOnly,
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
@@ -83,13 +83,22 @@ public class Reservation
             .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
             .ToList();
 
-        var openTimesWeekdaysConflicts = openTimesWeekDays
-            .Where(openTimeWeekDay => openTimeWeekDay.DayOfWeek == Day.DayOfWeek)
-            .Select(openTimeWeekDay => openTimeWeekDay.TimeSlot)
-            .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
-            .ToList();
+        var timeSlot = Day.DayOfWeek switch
+        {
+            DayOfWeek.Sunday => openTimesWeekDays.Sunday,
+            DayOfWeek.Monday => openTimesWeekDays.Monday,
+            DayOfWeek.Tuesday => openTimesWeekDays.Tuesday,
+            DayOfWeek.Wednesday => openTimesWeekDays.Wednesday,
+            DayOfWeek.Thursday => openTimesWeekDays.Thursday,
+            DayOfWeek.Friday => openTimesWeekDays.Friday,
+            DayOfWeek.Saturday => openTimesWeekDays.Saturday,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        
+        if(TimeSlot.IsWithin(timeSlot))
+            return true;
 
-        return closedOnTimeSlotsConflicts.Count != 0 || openTimesWeekdaysConflicts.Count != 0;
+        return closedOnTimeSlotsConflicts.Count != 0;
     }
 
     public List<Reservation> GetConflicts(List<Reservation> otherReservations)
@@ -122,9 +131,9 @@ public class Reservation
 
     private static void ValidateStartTimeIsInFuture(DateTime day, TimeSpan startTime)
     {
-        if (day.Day <= DateTime.Now.Day)
+        if (day.Date < DateTime.Now.Date)
             throw new ArgumentException("Start day must be today or in the future.");
-        if (day.Day == DateTime.Now.Day && startTime < DateTime.Now.TimeOfDay)
+        if (day.Date == DateTime.Now.Date && startTime < DateTime.Now.TimeOfDay)
             throw new ArgumentException("Start time must be in the future.");
     }
 }

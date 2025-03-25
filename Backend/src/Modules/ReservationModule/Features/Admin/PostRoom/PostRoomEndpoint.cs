@@ -27,7 +27,7 @@ public class PostRoomEndpoint(IUnitOfWork unitOfWork)
             return TypedResults.Conflict("Room with the same name already exists");
         }
 
-        var room = new Room(req.Name, req.DefaultOpenDate, req.DefaultCloseDate);
+        var room = Map.ToEntity(req);
         await unitOfWork.Rooms.AddRoomAsync(room, ct);
         await unitOfWork.CommitTransactionAsync(ct);
 

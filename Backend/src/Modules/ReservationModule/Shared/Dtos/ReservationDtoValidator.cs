@@ -8,8 +8,7 @@ public class ReservationDtoValidator : Validator<ReservationDto>
 {
     public ReservationDtoValidator()
     {
-        RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.");
+   
         
         RuleFor(x => x.RoomId)
             .NotEmpty().WithMessage("RoomId is required.");

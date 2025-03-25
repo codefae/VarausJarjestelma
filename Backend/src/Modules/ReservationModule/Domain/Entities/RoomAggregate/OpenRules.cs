@@ -28,7 +28,7 @@ public class OpenRules
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
-        DefaultOpenTimesForWeek = new WeeklySchedule(new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
+        DefaultOpenTimesForWeek = new WeeklySchedule();
 
         ExceptionsToWeekDayRules = [];
         UpdatedAt = DateTime.Now;

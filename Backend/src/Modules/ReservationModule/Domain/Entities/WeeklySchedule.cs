@@ -5,15 +5,15 @@ namespace src.Modules.ReservationModule.Domain.Entities;
 [Owned]
 public class WeeklySchedule
 {
-    public TimeSlot Monday { get; private set; }
-    public TimeSlot Tuesday { get; private set;}
-    public TimeSlot Wednesday { get; private set;}
-    public TimeSlot Thursday { get; private set;}
-    public TimeSlot Friday { get; private set;}
-    public TimeSlot Saturday { get; private set;}
-    public TimeSlot Sunday { get; private set;}
+    public TimeSlot Monday { get; private set; } =new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Tuesday { get; private set;} = new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Wednesday { get; private set; } = new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Thursday { get; private set;} =  new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Friday { get; private set;} =  new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Saturday { get; private set;} =  new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
+    public TimeSlot Sunday { get; private set;} =  new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
 
-    private WeeklySchedule() { } // EF Core requires a parameterless constructor
+    public WeeklySchedule() { } // EF Core requires a parameterless constructor
 
     public WeeklySchedule(
         TimeSlot monday, TimeSlot tuesday, TimeSlot wednesday, TimeSlot thursday, 
@@ -27,16 +27,7 @@ public class WeeklySchedule
         Saturday = saturday ?? throw new ArgumentNullException(nameof(saturday));
         Sunday = sunday ?? throw new ArgumentNullException(nameof(sunday));
     }
-    public WeeklySchedule(TimeSlot defaultTimeSlot)
-    {
-        Monday = defaultTimeSlot;
-        Tuesday = defaultTimeSlot;
-        Wednesday = defaultTimeSlot;
-        Thursday = defaultTimeSlot;
-        Friday = defaultTimeSlot;
-        Saturday = defaultTimeSlot;
-        Sunday = defaultTimeSlot;
-    }
+
 
     public TimeSlot GetTimeSlot(DayOfWeek day) => day switch
     {

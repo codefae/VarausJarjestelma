@@ -23,7 +23,6 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             
         ReservationDtos = e.reservations.Select(x => new ReservationDto()
         {
-            Id = x.Id.ToString(),
             RoomId = x.RoomId.ToString(),
             ReservationType = x.ReservationDetails.Type.ToString(),
             Day = x.Day,
@@ -49,17 +48,16 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
                 })
                 .ToList(),
 
-            DefaultOpenTimesForWeek = e.room.OpenRules.DefaultOpenTimesForWeek
-                .Select(x => new WeekDayTimeSlotDto
-                {
-                    DayOfWeek = x.DayOfWeek,
-                    TimeSlotDto = new TimeSlotDto
-                    {
-                        StartTime = x.TimeSlot.StartTime,
-                        EndTime = x.TimeSlot.EndTime
-                    }
-                })
-                .ToList()
+            DefaultOpenTimesForWeek = new WeeklyScheduleDto( )
+            {
+                Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
+                Saturday = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday,
+                Sunday = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday,
+                Monday = e.room.OpenRules.DefaultOpenTimesForWeek.Monday,
+                Tuesday = e.room.OpenRules.DefaultOpenTimesForWeek.Tuesday,
+                Wednesday = e.room.OpenRules.DefaultOpenTimesForWeek.Wednesday,
+                Thursday = e.room.OpenRules.DefaultOpenTimesForWeek.Thursday
+            }
         }
     };
 }

@@ -8,5 +8,5 @@ public class OpenRulesDto
     public required DateTime DefaultOpenDate { get; set; }
     public required DateTime DefaultCloseDate { get; set; }
     public required List<OpenTimeForDayDto> OpenTimesSingleDays { get; set; }
-    public required List<WeekDayTimeSlotDto>DefaultOpenTimesForWeek { get; set; } 
+    public required WeeklyScheduleDto DefaultOpenTimesForWeek { get; set; } 
 }          

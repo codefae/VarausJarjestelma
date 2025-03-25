@@ -5,7 +5,7 @@ namespace src.Modules.ReservationModule.Shared.Dtos;
 
 public class ReservationDto
 {
-    public required string Id { get; init; } 
+    
     public required string RoomId { get; init; } 
     public required string ReservationType { get; init; }
     public required TimeSlot TimeSlot { get; init; }
