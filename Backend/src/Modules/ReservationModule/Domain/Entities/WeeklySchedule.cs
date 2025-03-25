@@ -28,19 +28,6 @@ public class WeeklySchedule
         Sunday = sunday ?? throw new ArgumentNullException(nameof(sunday));
     }
 
-
-    public TimeSlot GetTimeSlot(DayOfWeek day) => day switch
-    {
-        DayOfWeek.Monday => Monday,
-        DayOfWeek.Tuesday => Tuesday,
-        DayOfWeek.Wednesday => Wednesday,
-        DayOfWeek.Thursday => Thursday,
-        DayOfWeek.Friday => Friday,
-        DayOfWeek.Saturday => Saturday,
-        DayOfWeek.Sunday => Sunday,
-        _ => throw new ArgumentOutOfRangeException(nameof(day), "Invalid day")
-    };
-
     public WeeklySchedule WithTimeSlot(DayOfWeek day, TimeSlot newTimeSlot)
     {
         return day switch
@@ -54,22 +41,5 @@ public class WeeklySchedule
             DayOfWeek.Sunday => new WeeklySchedule(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, newTimeSlot),
             _ => throw new ArgumentOutOfRangeException(nameof(day), "Invalid day")
         };
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not WeeklySchedule other) return false;
-        return Monday.Equals(other.Monday) &&
-               Tuesday.Equals(other.Tuesday) &&
-               Wednesday.Equals(other.Wednesday) &&
-               Thursday.Equals(other.Thursday) &&
-               Friday.Equals(other.Friday) &&
-               Saturday.Equals(other.Saturday) &&
-               Sunday.Equals(other.Sunday);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday);
     }
 }
