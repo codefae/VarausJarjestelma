@@ -22,7 +22,7 @@ public class ApplicationDbContext : DbContext
             {
                 openrules.OwnsMany<OpenTimeForDay>(o => o.ExceptionsToWeekDayRules, exceptionsToWeekDayRules =>
                     exceptionsToWeekDayRules.OwnsOne<TimeSlot>(t => t.TimeSlot));
-                openrules.OwnsMany<WeekDayTimeSlot>(o => o.DefaultOpenTimesForWeek, defaultOpenTimesForWeek =>
+                openrules.OwnsOne<WeeklySchedule>(o => o., defaultOpenTimesForWeek =>
                     defaultOpenTimesForWeek.OwnsOne<TimeSlot>(t => t.TimeSlot));
             });
 

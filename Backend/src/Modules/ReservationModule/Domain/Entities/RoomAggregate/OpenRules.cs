@@ -7,11 +7,10 @@ namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 [Owned]
 public class OpenRules
 {
-    
     public List<OpenTimeForDay> ExceptionsToWeekDayRules { get; private set; }
     public DateTime DefaultOpenDate { get; private set; }
     public DateTime DefaultCloseDate { get; private set; }
-    public List<WeekDayTimeSlot> DefaultOpenTimesForWeek { get; private set; }
+    public WeeklySchedule DefaultOpenTimesForWeek { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
     // Parameterless constructor for EF Core
@@ -29,16 +28,7 @@ public class OpenRules
 
         DefaultOpenDate = defaultOpenDate;
         DefaultCloseDate = defaultCloseDate;
-        DefaultOpenTimesForWeek = new List<WeekDayTimeSlot>
-        {
-            new WeekDayTimeSlot(DayOfWeek.Monday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Tuesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Wednesday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Thursday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Friday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Saturday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16))),
-            new WeekDayTimeSlot(DayOfWeek.Sunday, new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)))
-        };
+        DefaultOpenTimesForWeek = new WeeklySchedule(new TimeSlot(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
 
         ExceptionsToWeekDayRules = [];
         UpdatedAt = DateTime.Now;
@@ -73,8 +63,7 @@ public class OpenRules
 
     public void ChangeDefaultOpenTimeForWeekDay(DayOfWeek dayOfWeek, TimeSpan startTime, TimeSpan endTime)
     { 
-        DefaultOpenTimesForWeek.RemoveAll(x => x.DayOfWeek == dayOfWeek);
-        DefaultOpenTimesForWeek.Add(new WeekDayTimeSlot(dayOfWeek, new TimeSlot(startTime, endTime)));
+        DefaultOpenTimesForWeek = DefaultOpenTimesForWeek.WithTimeSlot(dayOfWeek,new TimeSlot(startTime, endTime));
 
         UpdatedAt = DateTime.Now;
     }

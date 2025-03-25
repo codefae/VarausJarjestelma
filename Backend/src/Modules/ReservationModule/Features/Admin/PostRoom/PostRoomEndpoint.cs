@@ -1,5 +1,6 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
+using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Interfaces;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostRoom;
@@ -26,7 +27,7 @@ public class PostRoomEndpoint(IUnitOfWork unitOfWork)
             return TypedResults.Conflict("Room with the same name already exists");
         }
 
-        var room = Map.ToEntity(req);
+        var room = new Room(req.Name, req.DefaultOpenDate, req.DefaultCloseDate);
         await unitOfWork.Rooms.AddRoomAsync(room, ct);
         await unitOfWork.CommitTransactionAsync(ct);
 

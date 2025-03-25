@@ -19,7 +19,20 @@ public class UnitOfWork(ApplicationDbContext context, IReservationRepository res
         if (transaction == null)
             throw new NullReferenceException("The transaction has already been completed or it was never started.");
         
-        await context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException ex)
+        {
+            Console.WriteLine($"DbUpdateException: {ex.Message}");
+            if (ex.InnerException != null)
+            {
+                Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+            }
+            throw;
+        }
+
         await transaction.CommitAsync(cancellationToken);
         await transaction.DisposeAsync();
     }
