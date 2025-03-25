@@ -8,7 +8,6 @@ public class ReservationDtoValidator : Validator<ReservationDto>
 {
     public ReservationDtoValidator()
     {
-   
         
         RuleFor(x => x.RoomId)
             .NotEmpty().WithMessage("RoomId is required.");
@@ -16,8 +15,8 @@ public class ReservationDtoValidator : Validator<ReservationDto>
         RuleFor(x => x.ReservationType)
             .NotEmpty().WithMessage("ReservationType is required.");
         
-        RuleFor(x => x.TimeSlot.StartTime)
-            .LessThan(x => x.TimeSlot.EndTime)
+        RuleFor(x => x.TimeSlotDto.StartTime)
+            .LessThan(x => x.TimeSlotDto.EndTime)
             .WithMessage("StartTime must be earlier than EndTime.");
         
         

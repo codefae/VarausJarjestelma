@@ -26,7 +26,11 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             RoomId = x.RoomId.ToString(),
             ReservationType = x.ReservationDetails.Type.ToString(),
             Day = x.Day,
-            TimeSlot = x.TimeSlot,
+            TimeSlotDto = new TimeSlotDto()
+            {
+                EndTime = x.TimeSlot.EndTime,
+                StartTime = x.TimeSlot.StartTime,
+            },
             DeviceId = x.ReservationDetails.Type is ReservationType.DeviceReservation ? x.ReservationDetails.DeviceId.ToString() : null,
             // TODO This is for the event feature
             // EventId = x.ReservationType is EventReservation eventReservation ? eventReservation.EventId.ToString() : null

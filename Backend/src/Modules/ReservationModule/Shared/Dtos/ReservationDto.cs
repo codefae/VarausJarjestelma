@@ -8,7 +8,7 @@ public class ReservationDto
     
     public required string RoomId { get; init; } 
     public required string ReservationType { get; init; }
-    public required TimeSlot TimeSlot { get; init; }
+    public required TimeSlotDto TimeSlotDto { get; init; }
     public required DateTime Day { get; init; }
     
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

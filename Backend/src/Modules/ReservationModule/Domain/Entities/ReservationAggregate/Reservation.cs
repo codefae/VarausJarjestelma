@@ -95,7 +95,7 @@ public class Reservation
             _ => throw new ArgumentOutOfRangeException()
         };
         
-        if(TimeSlot.IsWithin(timeSlot))
+        if(!TimeSlot.IsWithin(timeSlot))
             return true;
 
         return closedOnTimeSlotsConflicts.Count != 0;
