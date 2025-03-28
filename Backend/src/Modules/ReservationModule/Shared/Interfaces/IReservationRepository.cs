@@ -24,6 +24,7 @@ public interface IReservationRepository
 
     Task UpdateAsync(Reservation reservation, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(Guid reservationId, CancellationToken cancellationToken);
+    Task DeleteManyAsync(IEnumerable<Guid> reservationIds, CancellationToken ct);
     Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken);
     Task<IEnumerable<Reservation>> GetByUserAsync(Guid userId, DateTime date, CancellationToken cancellationToken);
 

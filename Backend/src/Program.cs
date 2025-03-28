@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using src;
+using src.Mock;
 using src.Modules.ReservationModule.Domain.DomainServices;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
@@ -24,10 +25,11 @@ builder.Services
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<IRoomRepository, RoomRepository>();
-builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-builder.Services.AddSingleton<IBookingDomainService, BookingDomainService>();
+builder.Services.AddScoped<ISendEMailToUser, SendEmailToUserMock>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IBookingDomainService, BookingDomainService>();
 
 var app = builder.Build();
 

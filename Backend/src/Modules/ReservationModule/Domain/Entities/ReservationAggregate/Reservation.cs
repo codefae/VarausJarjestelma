@@ -70,11 +70,11 @@ public class Reservation
 
     public bool IsConflicting(
         WeeklySchedule openTimesWeekDays,
-        List<OpenTimeForDay> exceptionsToWeekDayRulesReadOnly,
+        IReadOnlyList<OpenTimeForDay> exceptionsToWeekDayRulesReadOnly,
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
-        if (Day > defaultOpenDate || Day < defaultClosingDate)
+        if (Day < defaultOpenDate || Day > defaultClosingDate)
             return true;
 
         var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly

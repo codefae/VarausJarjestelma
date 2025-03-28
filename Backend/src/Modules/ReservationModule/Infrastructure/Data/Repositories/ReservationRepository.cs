@@ -34,6 +34,19 @@ public class ReservationRepository(ApplicationDbContext context) : IReservationR
         return true;
     }
 
+    public async Task DeleteManyAsync(IEnumerable<Guid> reservationIds, CancellationToken ct)
+    {
+        var reservationsToDelete = await context.Reservations
+            .Where(r => reservationIds.Contains(r.Id))
+            .ToListAsync(ct);
+
+        if (reservationsToDelete.Count != 0)
+        {
+            context.Reservations.RemoveRange(reservationsToDelete);
+            await context.SaveChangesAsync(ct);
+        }
+    }
+    
     public async Task<IEnumerable<Reservation>> GetByRoomAsync(Guid roomId, CancellationToken cancellationToken) =>
         await context.Reservations.Where(r => r.RoomId == roomId).ToListAsync(cancellationToken).ConfigureAwait(false);
 

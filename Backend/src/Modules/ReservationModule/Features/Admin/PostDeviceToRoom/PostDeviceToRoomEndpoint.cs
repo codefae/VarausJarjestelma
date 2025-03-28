@@ -1,6 +1,5 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using src.Modules.ReservationModule.Shared.Interfaces;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom;
@@ -26,25 +25,33 @@ public class PostDeviceToRoomEndpoint(
             throw new ArgumentException("Invalid room id format!");
 
         var device = Map.ToEntity(req);
-        await unitOfWork.BeginTransactionAsync(ct);
-        
-        var room = await unitOfWork.Rooms.GetAsync(roomId, ct);
-        if (room == null)
+
+        try
         {
-            await unitOfWork.RollbackTransactionAsync(ct);
-            return TypedResults.NotFound("Room not found!");
-        }
+            await unitOfWork.BeginTransactionAsync(ct);
 
-        if (room.Devices.Any(d => d.Name == device.Name))
+            var room = await unitOfWork.Rooms.GetAsync(roomId, ct);
+            if (room == null)
+            {
+                await unitOfWork.RollbackTransactionAsync(ct);
+                return TypedResults.NotFound("Room not found!");
+            }
+            
+            
+            if (!room.AddDevice(device))
+            {
+                await unitOfWork.RollbackTransactionAsync(ct);
+                return TypedResults.Problem("A device with the same name already exists in the room!");
+            }
+            
+            await unitOfWork.Rooms.UpdateRoomAsync(room, ct);
+            await unitOfWork.CommitTransactionAsync(ct);
+
+            return TypedResults.Ok("Device added to room successfully.");
+        }
+        finally
         {
-            await unitOfWork.RollbackTransactionAsync(ct);
-            return TypedResults.Problem("A device with the same name already exists in the room!");
-        }
-
-        room.Devices.Add(device);
-        await unitOfWork.Rooms.UpdateRoomAsync(room, ct);
-        await unitOfWork.CommitTransactionAsync(ct);
-
-        return TypedResults.Ok("Device added to room successfully.");
+            unitOfWork.Dispose();
+        } 
     }
 }

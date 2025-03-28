@@ -7,7 +7,8 @@ namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 [Owned]
 public class OpenRules
 {
-    public List<OpenTimeForDay> ExceptionsToWeekDayRules { get; private set; }
+    private List<OpenTimeForDay> exceptionsToWeekDayRules;
+    public IReadOnlyList<OpenTimeForDay> ExceptionsToWeekDayRules => exceptionsToWeekDayRules.AsReadOnly();
     public DateTime DefaultOpenDate { get; private set; }
     public DateTime DefaultCloseDate { get; private set; }
     public WeeklySchedule DefaultOpenTimesForWeek { get; private set; }
@@ -30,7 +31,7 @@ public class OpenRules
         DefaultCloseDate = defaultCloseDate;
         DefaultOpenTimesForWeek = new WeeklySchedule();
 
-        ExceptionsToWeekDayRules = [];
+        exceptionsToWeekDayRules = [];
         UpdatedAt = DateTime.Now;
     }
 
@@ -47,14 +48,14 @@ public class OpenRules
 
     public void AddOrChangeExceptionsToWeekDayRules(DateTime date, TimeSpan startTime, TimeSpan endTime)
     {
-         ExceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date);
-         ExceptionsToWeekDayRules.Add(new OpenTimeForDay(date, new TimeSlot(startTime, endTime)));
+         exceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date);
+         exceptionsToWeekDayRules.Add(new OpenTimeForDay(date, new TimeSlot(startTime, endTime)));
          UpdatedAt = DateTime.Now;
     }
 
     public bool RemoveExceptionsToWeekDayRules(DateTime date)
     {
-        if (ExceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date) < 1)
+        if (exceptionsToWeekDayRules.RemoveAll(x => x.Day.Date == date.Date) < 1)
             return false;
         
         UpdatedAt = DateTime.Now;
