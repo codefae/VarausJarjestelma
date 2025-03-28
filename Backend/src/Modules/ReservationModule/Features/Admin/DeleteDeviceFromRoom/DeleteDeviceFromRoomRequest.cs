@@ -4,6 +4,6 @@ namespace src.Modules.ReservationModule.Features.Admin.DeleteDeviceFromRoom;
 
 public class DeleteDeviceFromRoomRequest
 {
-    public required string RoomId { get; set; }
-    public required string DeviceId { get; set; }
+    public required string RoomId { get; init; }
+    public required string DeviceId { get; init; }
 }
