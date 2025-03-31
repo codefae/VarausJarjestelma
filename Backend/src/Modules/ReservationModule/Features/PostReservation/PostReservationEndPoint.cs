@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.DomainServices.ResultEnums;
 using src.Modules.ReservationModule.Shared.Interfaces;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 namespace src.Modules.ReservationModule.Features.PostReservation;
 
@@ -15,9 +16,10 @@ public class PostReservationEndPoint(
 {
     public override void Configure()
     {
-        Post("/reservations");
+        Post("reservations");
         Validator<PostReservationRequestValidator>();
         AllowAnonymous();
+        Group<UserEndpointGroup>();
     }
 
     public override async Task<Results<NotFound<string>, Ok<string>, ProblemHttpResult>> ExecuteAsync(

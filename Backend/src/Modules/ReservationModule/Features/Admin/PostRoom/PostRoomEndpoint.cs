@@ -2,6 +2,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Interfaces;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostRoom;
 
@@ -10,9 +11,10 @@ public class PostRoomEndpoint(IUnitOfWork unitOfWork)
 {
     public override void Configure()
     {
-        Post("/admin/room");
+        Post("room");
         Validator<PostRoomValidator>();
         AllowAnonymous();
+        Group<AdminEndpointGroup>();
     }
 
     public override async Task<Results<Ok, Conflict<string>, ProblemHttpResult>> ExecuteAsync(PostRoomRequest req,
