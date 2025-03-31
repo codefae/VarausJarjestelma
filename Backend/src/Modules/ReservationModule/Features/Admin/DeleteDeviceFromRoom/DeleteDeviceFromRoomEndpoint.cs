@@ -2,6 +2,7 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Shared.Interfaces;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 namespace src.Modules.ReservationModule.Features.Admin.DeleteDeviceFromRoom;
 
@@ -11,7 +12,9 @@ public class DeleteDeviceFromRoomEndpoint(
 {
     public override void Configure()
     {
-       Delete("/room/{roomId:guid}/device/{deviceId:guid}");
+       Delete("room/{roomId:guid}/device/{deviceId:guid}");
+       Group<AdminEndpointGroup>();
+
     }
 
     public override async Task<Results<Ok<string>, NotFound<string>>> ExecuteAsync(CancellationToken ct)

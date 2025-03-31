@@ -1,6 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Shared.Interfaces;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom;
 
@@ -13,9 +14,9 @@ public class PostDeviceToRoomEndpoint(
 {
     public override void Configure()
     {
-        Post("/admin/room/device");
+        Post("room/device");
         Validator<PostDeviceToRoomRequestValidator>();
-        AllowAnonymous();
+        Group<AdminEndpointGroup>();
     }
 
     public override async Task<Results<NotFound<string>, Ok<string>, ProblemHttpResult>> ExecuteAsync(

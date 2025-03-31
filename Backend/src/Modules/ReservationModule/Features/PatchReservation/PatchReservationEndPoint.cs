@@ -5,6 +5,7 @@ using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.DomainServices.ResultEnums;
 using src.Modules.ReservationModule.Shared.Interfaces;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 
 namespace src.Modules.ReservationModule.Features.PatchReservation;
@@ -19,9 +20,11 @@ public class PatchReservationEndPoint(
 {
     public override void Configure()
     {
-        Patch("/reservations");
+        Patch("reservations");
         Validator<PatchReservationRequestValidator>();
         AllowAnonymous();
+        Group<UserEndpointGroup>();
+        
     }
 
     public override async Task<Results<Ok<string>, NotFound<string>, ProblemHttpResult>> ExecuteAsync(

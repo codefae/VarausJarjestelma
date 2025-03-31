@@ -4,6 +4,8 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using src.Modules.ReservationModule.Shared.EndPointGroups;
+
 
 namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
@@ -15,8 +17,9 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
 {
     public override void Configure()
     {
-        Get("/rooms");
+        Get("rooms");
         AllowAnonymous();
+        Group<UserEndpointGroup>();
     }
 
     public override async Task<Results<Ok<GetAvailableRoomsResponse>, NotFound>> ExecuteAsync(

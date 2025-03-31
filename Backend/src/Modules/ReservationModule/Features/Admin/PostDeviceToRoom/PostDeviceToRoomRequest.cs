@@ -8,5 +8,7 @@ namespace src.Modules.ReservationModule.Features.Admin.PostDeviceToRoom
         public required string Name { get; init; } 
         public required string DeviceType { get; init; } 
         public required string Description { get; init; } 
+
+        
     }
 }
