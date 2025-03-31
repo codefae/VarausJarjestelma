@@ -2,16 +2,24 @@ namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 public class Device
 {
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
     public string Name { get; private set; }
     public string DeviceType { get; private set; }
     public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+    
+    public Guid RoomId { get; private set; }
+    public Room Room { get; private set; } = null!;
+    
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public Device() { }
+#pragma warning restore CS8618, CS9264
 
-    public Device(string name, string deviceType, string description)
+    public Device(string name, string deviceType, string description,  Guid? id = null)
     {
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.NewGuid();
         Name = TrimAndValidateName(name);
         DeviceType = TrimAndValidateDeviceType(deviceType);
         Description = TrimAndValidateDescription(description);

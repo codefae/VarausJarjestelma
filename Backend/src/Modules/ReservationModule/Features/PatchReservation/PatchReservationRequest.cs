@@ -11,9 +11,8 @@ namespace src.Modules.ReservationModule.Features.PatchReservation
 {
     public class PatchReservationRequest
     {
-        public required string ReservationId { get; set; }
-        public required DateTime Day { get; set; }
-        public required TimeSlotDto TimeSlotDto { get; set; }
-
+        public required string ReservationId { get; init; }
+        public required DateTime Day { get; init; }
+        public required TimeSlotDto TimeSlotDto { get; init; }
     }
 }

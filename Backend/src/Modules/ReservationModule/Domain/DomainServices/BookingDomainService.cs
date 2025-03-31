@@ -11,23 +11,23 @@ public class BookingDomainService : IBookingDomainService
     // also make sure that event is owned by the user
     public ValidateReservationResult ValidateReservation(Reservation reservation, Room room, IEnumerable<Reservation> reservations)
     {
-        switch (reservation.ReservationType)
+        switch (reservation.ReservationDetails.Type)
         {
-            case DeviceReservation deviceReservation:
+            case ReservationType.DeviceReservation:
             {
-                var isDeviceInDevicesList = room.IsDeviceWithIdInDevicesList(deviceReservation.DeviceId);
+                var isDeviceInDevicesList = room.IsDeviceWithIdInDevicesList( reservation.ReservationDetails.DeviceId.GetValueOrDefault());
                 if (!isDeviceInDevicesList)
                     return ValidateReservationResult.DeviceNotFound;
                 
                 break;
             }
-            case EventReservation eventReservation:
+            case ReservationType.EventReservation:
                 throw new NotImplementedException();
         }
 
         var isConflicting = reservation.IsConflicting(
             room.OpenRules.DefaultOpenTimesForWeek, 
-            room.OpenRules. ExceptionsToWeekDayRulesReadOnly ,
+            room.OpenRules.ExceptionsToWeekDayRules ,
             room.OpenRules.DefaultOpenDate,
             room.OpenRules.DefaultCloseDate);
         if(isConflicting)

@@ -1,5 +1,6 @@
 using System.Web;
 using FastEndpoints;
+using src.Modules.ReservationModule.Domain.Entities;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Dtos;
@@ -22,12 +23,15 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             
         ReservationDtos = e.reservations.Select(x => new ReservationDto()
         {
-            Id = x.Id.ToString(),
             RoomId = x.RoomId.ToString(),
-            ReservationType = x.ReservationType.Type,
-            StartTime =x.Day.AddMinutes(x.TimeSlot.StartTime.Minutes),
-            EndTime = x.Day.AddMinutes(x.TimeSlot.EndTime.Minutes),
-            DeviceId = x.ReservationType is DeviceReservation deviceReservation ? deviceReservation.DeviceId.ToString() : null,
+            ReservationType = x.ReservationDetails.Type.ToString(),
+            Day = x.Day,
+            TimeSlotDto = new TimeSlotDto()
+            {
+                EndTime = x.TimeSlot.EndTime,
+                StartTime = x.TimeSlot.StartTime,
+            },
+            DeviceId = x.ReservationDetails.Type is ReservationType.DeviceReservation ? x.ReservationDetails.DeviceId.ToString() : null,
             // TODO This is for the event feature
             // EventId = x.ReservationType is EventReservation eventReservation ? eventReservation.EventId.ToString() : null
         }).ToList(),
@@ -36,18 +40,28 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
         {
             DefaultCloseDate = e.room.OpenRules.DefaultCloseDate,
             DefaultOpenDate = e.room.OpenRules.DefaultOpenDate,
-            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRulesReadOnly .ToDictionary(x => x.Key, x =>
-                new TimeSlotDto()
+            OpenTimesSingleDays = e.room.OpenRules.ExceptionsToWeekDayRules
+                .Select(x => new OpenTimeForDayDto
                 {
-                    StartTime = x.Value.StartTime,
-                    EndTime = x.Value.EndTime
-                }),
-            DefaultOpenTimesForWeek = e.room.OpenRules.DefaultOpenTimesForWeek.ToDictionary(x => x.Key, x =>
-                new TimeSlotDto()
-                {
-                    StartTime = x.Value.StartTime,
-                    EndTime = x.Value.EndTime
+                    Day = x.Day,
+                    TimeSlotDto = new TimeSlotDto
+                    {
+                        StartTime = x.TimeSlot.StartTime,
+                        EndTime = x.TimeSlot.EndTime
+                    }
                 })
+                .ToList(),
+
+            DefaultOpenTimesForWeek = new WeeklyScheduleDto( )
+            {
+                Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
+                Saturday = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday,
+                Sunday = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday,
+                Monday = e.room.OpenRules.DefaultOpenTimesForWeek.Monday,
+                Tuesday = e.room.OpenRules.DefaultOpenTimesForWeek.Tuesday,
+                Wednesday = e.room.OpenRules.DefaultOpenTimesForWeek.Wednesday,
+                Thursday = e.room.OpenRules.DefaultOpenTimesForWeek.Thursday
+            }
         }
     };
 }

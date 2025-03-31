@@ -1,10 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace src.Modules.ReservationModule.Domain.Entities;
 
+[Owned]
 public class TimeSlot
 {
-    public TimeSpan StartTime { get; }
-    public TimeSpan EndTime { get; }
+    public TimeSpan StartTime { get; private set; }
+    public TimeSpan EndTime { get; private set; }
 
+    // Parameterless constructor for EF Core
+    public TimeSlot() { }
+    
     public TimeSlot(TimeSpan startTime, TimeSpan endTime)
     {
         if (startTime < TimeSpan.Zero)

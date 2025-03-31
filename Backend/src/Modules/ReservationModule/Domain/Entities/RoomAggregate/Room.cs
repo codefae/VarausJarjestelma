@@ -1,15 +1,24 @@
-using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
+using System.ComponentModel.DataAnnotations;
 
 namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
-public class Room : IAggregateRoot
+public class Room 
 {
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
     public string Name { get; private set; }
-    public OpenRules OpenRules { get; }
-    public List<Device> Devices { get; private set; }
+    public OpenRules OpenRules { get; private set; }
+
+    private List<Device> devices = [];
+    public IReadOnlyList<Device> Devices => devices.AsReadOnly();
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
+
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public Room()
+    {
+    }
+#pragma warning restore CS8618, CS9264
 
     public Room(string name, DateTime defaultOpenDate, DateTime defaultCloseDate, Guid? id = null)
     {
@@ -18,7 +27,7 @@ public class Room : IAggregateRoot
         OpenRules = new OpenRules(
             defaultOpenDate,
             defaultCloseDate);
-        Devices = [];
+        devices = [];
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }
@@ -37,16 +46,15 @@ public class Room : IAggregateRoot
 
     public bool IsDeviceWithIdInDevicesList(Guid id) =>
         Devices.Any(device => device.Id == id);
-    
-    public bool AddDevice(string name, string deviceType, string description)
+
+    public bool AddDevice(Device newDevice)
     {
-        var newDevice = new Device(name, deviceType, description);
         if (Devices.Any(device => device.Name == newDevice.Name))
         {
             return false; // Device with the same name already exists
         }
 
-        Devices.Add(newDevice);
+        devices.Add(newDevice);
         UpdatedAt = DateTime.Now;
         return true;
     }
@@ -59,7 +67,7 @@ public class Room : IAggregateRoot
             return false; // Device not found
         }
 
-        Devices.Remove(device);
+        devices.Remove(device);
         UpdatedAt = DateTime.Now;
         return true;
     }

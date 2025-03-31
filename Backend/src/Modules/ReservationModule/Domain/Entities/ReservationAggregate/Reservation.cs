@@ -1,20 +1,29 @@
 using System.Collections.ObjectModel;
+using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 namespace src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 
 // TODO The values that are before current date need to be archived or deleted on a backround job for the db.
 
-public class Reservation : IAggregateRoot
+public class Reservation 
 {
-    public Guid Id { get; }
-    public Guid UserId { get; }
-    public Guid RoomId { get; }
-    public ReservationType ReservationType { get; }
+    public Guid Id { get; private set; }
+    public Guid UserId { get; private set; }
+    
+    public ReservationDetails ReservationDetails { get; private set; }
     public DateTime Day { get; private set; }
-    public TimeSlot TimeSlot { get;  private set; }
-    public DateTime CreatedAt { get; }
+    public TimeSlot TimeSlot { get; private set; }
+    public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
-
+    
+    public Guid RoomId { get; private set; }
+    public Room Room { get; private set; } = null!;
+    // Parameterless constructor for EF Core
+#pragma warning disable CS8618, CS9264
+    public Reservation()
+    {
+    }
+#pragma warning restore CS8618, CS9264
     /// <summary>
     /// Creates a reservation.
     /// If eventId is set, it is an event reservation, if eventId is not set, but deviceId is set it is a Device reservation.
@@ -34,54 +43,64 @@ public class Reservation : IAggregateRoot
         TimeSpan startTime,
         TimeSpan endTime,
         Guid? eventId = null,
-        Guid? deviceId = null)
+        Guid? deviceId = null,
+        Guid? id = null)
     {
         RoundToNearest15Minutes(startTime);
         RoundToNearest15Minutes(endTime);
         ValidateStartTimeIsInFuture(day, startTime);
 
-        ReservationType reservationType;
+        ReservationDetails reservationDetails;
         if (eventId.HasValue && eventId != Guid.Empty)
-            reservationType = new EventReservation(eventId.Value);
+            reservationDetails = new ReservationDetails(ReservationType.EventReservation, eventId:eventId.Value);
         else if (deviceId.HasValue && deviceId != Guid.Empty)
-            reservationType = new DeviceReservation(deviceId.Value);
+            reservationDetails = new ReservationDetails(ReservationType.DeviceReservation, deviceId: deviceId.Value);
         else
-            reservationType = new RoomReservation();
-        
-        Id = Guid.NewGuid();
+            reservationDetails = new ReservationDetails(ReservationType.RoomReservation);
+
+        Id = id ?? Guid.NewGuid();
         UserId = userId;
         RoomId = roomId;
         Day = day.Date;
         TimeSlot = new TimeSlot(startTime, endTime);
-        ReservationType = reservationType;
+        ReservationDetails = reservationDetails;
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }
 
     public bool IsConflicting(
-        ReadOnlyDictionary<DayOfWeek, TimeSlot> openTimesWeekDays,
-        ReadOnlyDictionary<DateTime, TimeSlot>  exceptionsToWeekDayRulesReadOnly ,
+        WeeklySchedule openTimesWeekDays,
+        IReadOnlyList<OpenTimeForDay> exceptionsToWeekDayRulesReadOnly,
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
-        if (Day > defaultOpenDate || Day < defaultClosingDate)
+        if (Day < defaultOpenDate || Day > defaultClosingDate)
             return true;
 
-        var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly 
-            .Where(dateTimeSlot => dateTimeSlot.Key == Day)
-            .Select(x => x.Value)
-            .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
-            .ToList();
-        
-        var openTimesWeekdaysConflicts = openTimesWeekDays
-            .Where(openTimeWeekDay => openTimeWeekDay.Key == Day.DayOfWeek)
-            .Select(openTimeWeekDay => openTimeWeekDay.Value)
+        var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly
+            .Where(dateTimeSlot => dateTimeSlot.Day == Day)
+            .Select(x => x.TimeSlot)
             .Where(timeSlot => TimeSlot.IsWithin(timeSlot))
             .ToList();
 
-        return closedOnTimeSlotsConflicts.Count != 0 || openTimesWeekdaysConflicts.Count != 0;
+        var timeSlot = Day.DayOfWeek switch
+        {
+            DayOfWeek.Sunday => openTimesWeekDays.Sunday,
+            DayOfWeek.Monday => openTimesWeekDays.Monday,
+            DayOfWeek.Tuesday => openTimesWeekDays.Tuesday,
+            DayOfWeek.Wednesday => openTimesWeekDays.Wednesday,
+            DayOfWeek.Thursday => openTimesWeekDays.Thursday,
+            DayOfWeek.Friday => openTimesWeekDays.Friday,
+            DayOfWeek.Saturday => openTimesWeekDays.Saturday,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        
+        if(!TimeSlot.IsWithin(timeSlot))
+            return true;
+
+        return closedOnTimeSlotsConflicts.Count != 0;
     }
-    
+
     public List<Reservation> GetConflicts(List<Reservation> otherReservations)
     {
         return otherReservations.Where(reservation =>
@@ -98,12 +117,12 @@ public class Reservation : IAggregateRoot
         newEndTime = RoundToNearest15Minutes(newEndTime);
 
         ValidateStartTimeIsInFuture(day, newStartTime);
-        
+
         Day = day;
         TimeSlot = new TimeSlot(newStartTime, newEndTime);
         UpdatedAt = DateTime.Now;
     }
-    
+
     private static TimeSpan RoundToNearest15Minutes(TimeSpan time)
     {
         var minutes = (int)Math.Round(time.TotalMinutes / 15.0) * 15;
@@ -112,9 +131,9 @@ public class Reservation : IAggregateRoot
 
     private static void ValidateStartTimeIsInFuture(DateTime day, TimeSpan startTime)
     {
-        if(day.Day <= DateTime.Now.Day)
+        if (day.Date < DateTime.Now.Date)
             throw new ArgumentException("Start day must be today or in the future.");
-        if (day.Day == DateTime.Now.Day && startTime< DateTime.Now.TimeOfDay)
+        if (day.Date == DateTime.Now.Date && startTime < DateTime.Now.TimeOfDay)
             throw new ArgumentException("Start time must be in the future.");
     }
 }

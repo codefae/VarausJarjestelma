@@ -14,8 +14,8 @@ public class DeleteRoomEndpoint : Endpoint<
         AllowAnonymous();
     }
 
-    public override Task HandleAsync(DeleteRoomRequest req, CancellationToken ct)
+    public override Task<Results<Ok, NotFound, ProblemHttpResult>> ExecuteAsync(DeleteRoomRequest req, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        throw new System.NotImplementedException();
     }
 }

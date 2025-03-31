@@ -1,6 +1,5 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
 using src.Modules.ReservationModule.Domain.DomainServices.ResultEnums;
 using src.Modules.ReservationModule.Shared.Interfaces;
@@ -8,11 +7,11 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 namespace src.Modules.ReservationModule.Features.PostReservation;
 
 public class PostReservationEndPoint(
-    IReservationRepository reservationRepository,
-    IRoomRepository roomRepository,
     IBookingDomainService bookingDomainService,
-    ILogger<PostReservationEndPoint> logger)
-    : EndpointWithMapper<PostReservationRequest, PostReservationMapper>
+    IUnitOfWork unitOfWork)
+    : Endpoint<PostReservationRequest, 
+        Results<NotFound<string>, Ok<string>, ProblemHttpResult>,
+        PostReservationMapper>
 {
     public override void Configure()
     {
@@ -21,58 +20,54 @@ public class PostReservationEndPoint(
         AllowAnonymous();
     }
 
-    public override async Task<Results<NotFound<string>,Ok<string>,ProblemHttpResult>> HandleAsync(PostReservationRequest req, CancellationToken ct)
+    public override async Task<Results<NotFound<string>, Ok<string>, ProblemHttpResult>> ExecuteAsync(
+        PostReservationRequest req, CancellationToken ct)
     {
         var reservation = Map.ToEntity(req);
-        
-        var retries = 5; // This is for DbUpdateConcurrencyException
-        while(retries-- > 0)// This is for DbUpdateConcurrencyException
+
+        try
         {
-            // Io logic
-            var roomTask = roomRepository.GetRoomByIdAsync(reservation.RoomId, ct);
-            var reservationsTask = reservationRepository.GetByRoomAndDateAsync(
+            await unitOfWork.BeginTransactionAsync(ct);
+
+            var roomTask = unitOfWork.Rooms.GetAsync(reservation.RoomId, ct);
+            var reservationsTask = unitOfWork.Reservations.GetByRoomAndDateAsync(
                 reservation.RoomId,
                 reservation.Day,
                 ct);
-            
+
             await Task.WhenAll(roomTask, reservationsTask);
-         
+
             var room = await roomTask;
             var reservations = await reservationsTask;
 
             if (room == null)
-            {
                 return TypedResults.NotFound("Room not found!");
-            }
 
-            // Business Logc
             var result = bookingDomainService.ValidateReservation(reservation, room, reservations);
 
-            // Io logic
             switch (result)
             {
                 case ValidateReservationResult.Success:
-                    try
-                    {
-                        await reservationRepository.AddAndMakeSureRoomIsNotChangedAsync(reservation, ct);
-                        return TypedResults.Ok("Reservation created successfully.");
-                    }
-                    // This is for DbUpdateConcurrencyException
-                    catch (DbUpdateConcurrencyException e)
-                    {
-                        logger.LogInformation("Concurrency exception occurred while creating a new reservation, retrying...");
-                    }
-                    break;
+                    await unitOfWork.Reservations.AddAsync(reservation, ct);
+                    await unitOfWork.CommitTransactionAsync(ct);
+                    return TypedResults.Ok("Reservation created successfully.");
                 case ValidateReservationResult.ReservationConflicts:
+                    await unitOfWork.RollbackTransactionAsync(ct);
                     return TypedResults.Problem("Reservation conflicts with other reservations!");
                 case ValidateReservationResult.DeviceNotFound:
+                    await unitOfWork.RollbackTransactionAsync(ct);
                     return TypedResults.NotFound("Device not found!");
                 case ValidateReservationResult.RoomNotOpen:
+                    await unitOfWork.RollbackTransactionAsync(ct);
                     return TypedResults.Problem("Room is not open!");
+                default:
+                    await unitOfWork.RollbackTransactionAsync(ct);
+                    throw new ArgumentOutOfRangeException();
             }
         }
-        
-        // This is for DbUpdateConcurrencyException
-        return TypedResults.Problem("Many people try to create reservations a the same time try again later!");
+        finally
+        {
+            unitOfWork.Dispose();
+        }
     }
 }
