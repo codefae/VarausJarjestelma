@@ -104,9 +104,16 @@ public class Reservation
     public List<Reservation> GetConflicts(List<Reservation> otherReservations)
     {
         return otherReservations.Where(reservation =>
-                reservation.RoomId == RoomId &&
-                reservation.Day == Day &&
-                reservation.TimeSlot.ConflictsWith(TimeSlot) // Tarkistaa päällekkäisyyden
+            reservation.RoomId == RoomId &&
+            reservation.Day == Day &&
+            reservation.TimeSlot.ConflictsWith(TimeSlot) &&
+            (
+                reservation.ReservationDetails.Type == ReservationType.RoomReservation ||
+                reservation.ReservationDetails.Type == ReservationType.EventReservation ||
+                (reservation.ReservationDetails.Type == ReservationType.DeviceReservation &&
+                 ReservationDetails.Type == ReservationType.DeviceReservation &&
+                 reservation.ReservationDetails.DeviceId == ReservationDetails.DeviceId)
+            )
         ).ToList();
     }
 
