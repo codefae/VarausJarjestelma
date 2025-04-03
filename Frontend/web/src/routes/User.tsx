@@ -1,6 +1,7 @@
+import AvailableRooms from "../Components/AvailableRooms.tsx";
 
 const User = () => {
-    return <h1>user</h1>
+    return <AvailableRooms/>
 }
 
 export default User
