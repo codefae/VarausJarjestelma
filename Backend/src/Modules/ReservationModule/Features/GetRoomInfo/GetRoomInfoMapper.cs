@@ -55,6 +55,7 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             DefaultOpenTimesForWeek = new WeeklyScheduleDto( )
             {
                 Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
+                Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
                 Saturday = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday,
                 Sunday = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday,
                 Monday = e.room.OpenRules.DefaultOpenTimesForWeek.Monday,
