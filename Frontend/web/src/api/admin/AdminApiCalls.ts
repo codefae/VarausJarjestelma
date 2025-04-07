@@ -1,7 +1,10 @@
+import { PostRoomRequest } from "../../models/postRoomRequest";
+import { DeviceDto } from "../../models/deviceDto";
+
 const API_BASE_URL = "/admin"; // Admin API:n reittipolku, määritelty backendissä
 
 // Lisää huone
-export async function addRoom(roomData: { name: string; defaultOpenDate: string; defaultCloseDate: string }): Promise<{ id: string; name: string }> {
+export async function addRoom(roomData: PostRoomRequest): Promise<{ id: string; name: string }> {
     const response = await fetch(`${API_BASE_URL}/room`, {
         method: "POST",
         headers: {
@@ -18,7 +21,7 @@ export async function addRoom(roomData: { name: string; defaultOpenDate: string;
 }
 
 // Lisää laite huoneeseen
-export async function addDeviceToRoom(deviceData: { roomId: string; name: string; deviceType: string; description: string }): Promise<string> {
+export async function addDeviceToRoom(deviceData: DeviceDto & { roomId: string }): Promise<DeviceDto> {
     const response = await fetch(`${API_BASE_URL}/room/device`, {
         method: "POST",
         headers: {
@@ -31,5 +34,5 @@ export async function addDeviceToRoom(deviceData: { roomId: string; name: string
         throw new Error(`Failed to add device to room: ${response.statusText}`);
     }
 
-    return await response.text(); // Palauttaa onnistumisviestin, esim. "Device added to room successfully."
+    return await response.json(); // Palauttaa lisätyn laitteen tiedot
 }
