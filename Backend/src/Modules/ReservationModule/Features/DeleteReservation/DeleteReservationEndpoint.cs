@@ -1,6 +1,5 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using src.Modules.ReservationModule.Features.GetAvailableRooms;
 using src.Modules.ReservationModule.Shared.Interfaces;
 using src.Modules.ReservationModule.Shared.EndPointGroups;
 

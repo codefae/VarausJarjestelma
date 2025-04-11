@@ -1,6 +1,5 @@
 using System.Web;
 using FastEndpoints;
-using src.Modules.ReservationModule.Domain.Entities;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Dtos;

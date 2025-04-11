@@ -1,12 +1,9 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
 using src.Modules.ReservationModule.Domain.DomainServices.Interfaces;
-using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
 using src.Modules.ReservationModule.Domain.DomainServices.ResultEnums;
-using src.Modules.ReservationModule.Shared.Interfaces;
 using src.Modules.ReservationModule.Shared.EndPointGroups;
-
+using src.Modules.ReservationModule.Shared.Interfaces;
 
 namespace src.Modules.ReservationModule.Features.PatchReservation;
 

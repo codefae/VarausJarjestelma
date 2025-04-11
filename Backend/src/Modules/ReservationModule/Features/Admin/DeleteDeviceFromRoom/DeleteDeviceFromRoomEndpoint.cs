@@ -14,7 +14,6 @@ public class DeleteDeviceFromRoomEndpoint(
     {
        Delete("room/{roomId:guid}/device/{deviceId:guid}");
        Group<AdminEndpointGroup>();
-
     }
 
     public override async Task<Results<Ok<string>, NotFound<string>>> ExecuteAsync(CancellationToken ct)

@@ -2,9 +2,12 @@ using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Shared.Interfaces;
 using src.Modules.ReservationModule.Shared.EndPointGroups;
+
 namespace src.Modules.ReservationModule.Features.GetRoomInfo;
 
-public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, IRoomRepository roomRepository)
+public class GetRoomInfoEndpoint(
+    IReservationRepository reservationRepository, 
+    IRoomRepository roomRepository)
     : EndpointWithoutRequest
     <
         Results<Ok<GetRoomInfoResponse>, NotFound<string>>,
@@ -18,10 +21,10 @@ public class GetRoomInfoEndpoint(IReservationRepository reservationRepository, I
         Group<UserEndpointGroup>();
     }
 
-    public override async Task<Results<Ok<GetRoomInfoResponse>,NotFound<string>>> ExecuteAsync(CancellationToken ct)
+    public override async Task<Results<Ok<GetRoomInfoResponse>, NotFound<string>>> ExecuteAsync(CancellationToken ct)
     {
         var roomId = Route<Guid>("roomId");
-        
+
         var roomTask = roomRepository.GetAsync(roomId, ct);
         var reservationsTask = reservationRepository.GetByRoomAsync(roomId, ct);
 

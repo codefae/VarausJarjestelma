@@ -1,13 +1,17 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
-using src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 using src.Modules.ReservationModule.Shared.Interfaces;
 using src.Modules.ReservationModule.Shared.EndPointGroups;
 
 namespace src.Modules.ReservationModule.Features.Admin.PostRoom;
 
 public class PostRoomEndpoint(IUnitOfWork unitOfWork)
-    : Endpoint<PostRoomRequest, Results<Ok, Conflict<string>, ProblemHttpResult>, PostRoomMapper>
+    : Endpoint
+    <
+        PostRoomRequest, 
+        Results<Ok, Conflict<string>, ProblemHttpResult>, 
+        PostRoomMapper
+    >
 {
     public override void Configure()
     {
