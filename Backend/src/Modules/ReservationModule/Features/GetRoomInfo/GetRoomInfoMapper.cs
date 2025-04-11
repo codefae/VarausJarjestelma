@@ -9,9 +9,9 @@ namespace src.Modules.ReservationModule.Features.GetRoomInfo;
 
 public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reservation>reservations, Room room)>
 {
-    public override GetRoomInfoResponse FromEntity((List<Reservation> reservations, Room room) e) => new ()
+    public override GetRoomInfoResponse FromEntity((List<Reservation> reservations, Room room) e) => new()
     {
-        RoomId =  e.room.Id.ToString(),
+        RoomId = e.room.Id.ToString(),
         RoomName = HttpUtility.HtmlEncode(e.room.Name),
         RoomDevices = e.room.Devices.Select(x => new DeviceDto()
         {
@@ -20,7 +20,7 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
             DeviceType = HttpUtility.HtmlEncode(x.DeviceType),
             Description = HttpUtility.HtmlEncode(x.Description)
         }).ToList(),
-            
+
         ReservationDtos = e.reservations.Select(x => new ReservationDto()
         {
             RoomId = x.RoomId.ToString(),
@@ -31,11 +31,13 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
                 EndTime = x.TimeSlot.EndTime,
                 StartTime = x.TimeSlot.StartTime,
             },
-            DeviceId = x.ReservationDetails.Type is ReservationType.DeviceReservation ? x.ReservationDetails.DeviceId.ToString() : null,
+            DeviceId = x.ReservationDetails.Type is ReservationType.DeviceReservation
+                ? x.ReservationDetails.DeviceId.ToString()
+                : null,
             // TODO This is for the event feature
             // EventId = x.ReservationType is EventReservation eventReservation ? eventReservation.EventId.ToString() : null
         }).ToList(),
-            
+
         OpenTimes = new OpenRulesDto()
         {
             DefaultCloseDate = e.room.OpenRules.DefaultCloseDate,
@@ -52,16 +54,43 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
                 })
                 .ToList(),
 
-            DefaultOpenTimesForWeek = new WeeklyScheduleDto( )
+            DefaultOpenTimesForWeek = new WeeklyScheduleDto()
             {
-                Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
-                Friday = e.room.OpenRules.DefaultOpenTimesForWeek.Friday,
-                Saturday = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday,
-                Sunday = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday,
-                Monday = e.room.OpenRules.DefaultOpenTimesForWeek.Monday,
-                Tuesday = e.room.OpenRules.DefaultOpenTimesForWeek.Tuesday,
-                Wednesday = e.room.OpenRules.DefaultOpenTimesForWeek.Wednesday,
-                Thursday = e.room.OpenRules.DefaultOpenTimesForWeek.Thursday
+                Monday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Monday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Monday.EndTime,
+                },
+                Tuesday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Tuesday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Tuesday.EndTime,
+                },
+                Wednesday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Wednesday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Wednesday.EndTime,
+                },
+                Thursday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Thursday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Thursday.EndTime
+                },
+                Friday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Friday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Friday.EndTime
+                },
+                Saturday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Saturday.EndTime
+                },
+                Sunday = new TimeSlotDto()
+                {
+                    StartTime = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday.StartTime,
+                    EndTime = e.room.OpenRules.DefaultOpenTimesForWeek.Sunday.EndTime
+                }
             }
         }
     };

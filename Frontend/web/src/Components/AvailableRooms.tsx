@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
+import {GetAvailableRoomsResponse} from "../models/getAvailableRoomsResponse.ts";
 
-export interface GetAvailableRoomsResponse {
-    availableRooms: RoomDetails[];
-}
 
 const AvailableRooms = () => {
-    const [availableRooms, setAvailableRooms] = useState<RoomDetails[]>([]);
+    const [availableRooms, setAvailableRooms] = useState<GetAvailableRoomsResponse>();
 
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await fetch("/api/rooms");
-                if (!response.ok) throw new Error("Failed to fetch rooms");
+
                 const data: GetAvailableRoomsResponse = await response.json();
                 setAvailableRooms(data.availableRooms);
             } catch (error) {

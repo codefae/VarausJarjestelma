@@ -12,8 +12,7 @@ namespace src.Modules.ReservationModule.Features.PatchReservation;
 
 public class PatchReservationEndPoint(
     IBookingDomainService bookingDomainService,
-    IUnitOfWork unitOfWork,
-    ILogger<PatchReservationEndPoint> logger)
+    IUnitOfWork unitOfWork)
     : Endpoint<
         PatchReservationRequest,
         Results<Ok<string>, NotFound<string>, ProblemHttpResult>>
