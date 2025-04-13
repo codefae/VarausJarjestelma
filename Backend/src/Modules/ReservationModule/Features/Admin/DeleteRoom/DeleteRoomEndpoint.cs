@@ -14,7 +14,7 @@ public class DeleteRoomEndpoint(
 {
     public override void Configure()
     {
-        Delete("admin/room/{roomId:guid}");
+        Delete("room/{roomId:guid}");
         AllowAnonymous();
         Group<AdminEndpointGroup>();
     }

@@ -15,12 +15,23 @@ using src.Modules.ReservationModule.Shared.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Allow CORS for frontend
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins(["http://192.168.159.23:5173","http://localhost:5173"]) // your frontend URL
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
+
+
+
+
 builder.Services.AddOpenApi();
 builder.Services
     .AddFastEndpoints()
     .SwaggerDocument();
-
-
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -42,5 +53,7 @@ app.UseHttpsRedirection();
 app.UseDefaultExceptionHandler(useGenericReason: true)
     .UseFastEndpoints()
     .UseSwaggerGen();
+
+app.UseCors("AllowFrontend");
 
 app.Run();

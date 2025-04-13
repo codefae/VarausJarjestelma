@@ -1,17 +1,21 @@
 
-const BASE_URL = '/users'; 
-const ROOM_BASE_URL = '/rooms';
-const RESERVATION_BASE_URL = '/reservations';
+import {PostReservationRequest} from "../../models/postReservationRequest.ts";
+import {GetRoomInfoResponse} from "../../models/getRoomInfoResponse.ts";
+import {GetAvailableRoomsResponse} from "../../models/getAvailableRoomsResponse.ts";
+
+const BASE_URL = 'http://192.168.159.23:5121/user';
+const ROOM_BASE_URL = BASE_URL + '/rooms';
+const RESERVATION_BASE_URL = BASE_URL + '/reservations';
 
 export const UserApiCalls = {
-    postReservation: async (reservationData: { userId: string; roomId: string; startTime: string; endTime: string }) => {
+    postReservation: async (postReservationRequest: PostReservationRequest) => {
         try {
-            const response = await fetch(`${RESERVATION_BASE_URL}/post`, {
+            const response = await fetch(`${RESERVATION_BASE_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(reservationData),
+                body: JSON.stringify(postReservationRequest),
             });
             if (!response.ok) {
                 throw new Error('Failed to post reservation');
@@ -23,30 +27,47 @@ export const UserApiCalls = {
         }
     },
 
+    getAvailableRooms: async (): Promise<GetAvailableRoomsResponse> =>{
+      try {
+          const response =  await fetch(`${ROOM_BASE_URL}`);
+          if (!response.ok) {
+              throw new Error('Failed to fetch room information');
+          }
 
-    getRoomInfo: async (roomId: string) => {
+          // Parse the JSON directly from the response
+          return  await response.json();
+      } catch (error) {
+          console.error('Error fetching available room');
+          throw error;
+      }
+    },
+
+    getRoomInfo: async (roomId: string): Promise<GetRoomInfoResponse> => {
         try {
-            const response = await fetch(`${ROOM_BASE_URL}/info/${roomId}`);
+            const response = await fetch(`${ROOM_BASE_URL}/${roomId}/info`);
             if (!response.ok) {
                 throw new Error('Failed to fetch room information');
             }
-            return await response.json();
+
+            // Parse the JSON directly from the response
+
+            return await response.json();;
         } catch (error) {
             console.error(`Error fetching room info for ID ${roomId}:`, error);
             throw error;
         }
     },
 
+
     // Delete a reservation by ID
     deleteReservation: async (reservationId: string) => {
         try {
-            const response = await fetch(`${RESERVATION_BASE_URL}/delete/${reservationId}`, {
+            const response = await fetch(`${RESERVATION_BASE_URL}/${reservationId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
                 throw new Error('Failed to delete reservation');
             }
-            return await response.json();
         } catch (error) {
             console.error(`Error deleting reservation with ID ${reservationId}:`, error);
             throw error;

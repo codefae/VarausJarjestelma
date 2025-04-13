@@ -1,35 +1,37 @@
-const API_BASE_URL = "/admin"; // Admin API:n reittipolku, määritelty backendissä
+import {PostRoomRequest} from "../../models/postRoomRequest.ts";
+import {PostDeviceToRoomRequest} from "../../models/postDeviceToRoomRequest.ts";
+
+const BASE_URL = 'http://192.168.159.23:5121/admin';
+const ROOM_BASE_URL = BASE_URL + '/room'; // Admin API:n reittipolku, määritelty backendissä
 
 // Lisää huone
-export async function addRoom(roomData: { name: string; defaultOpenDate: string; defaultCloseDate: string }) {
-    const response = await fetch(`${API_BASE_URL}/room`, {
+export async function addRoom(postRoomRequest: PostRoomRequest) {
+    const response = await fetch(`${ROOM_BASE_URL}/room`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(roomData),
+        body: JSON.stringify(postRoomRequest),
     });
 
     if (!response.ok) {
         throw new Error(`Failed to add room: ${response.statusText}`);
     }
-
-    return await response.json();
 }
 
+
+
 // Lisää laite huoneeseen
-export async function addDeviceToRoom(deviceData: { roomId: string; name: string; deviceType: string; description: string }) {
-    const response = await fetch(`${API_BASE_URL}/room/device`, {
+export async function addDeviceToRoom(postDeviceToRoomRequest: PostDeviceToRoomRequest) {
+    const response = await fetch(`${ROOM_BASE_URL}/room/device`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(deviceData),
+        body: JSON.stringify(postDeviceToRoomRequest),
     });
 
     if (!response.ok) {
         throw new Error(`Failed to add device to room: ${response.statusText}`);
     }
-
-    return await response.json();
 }

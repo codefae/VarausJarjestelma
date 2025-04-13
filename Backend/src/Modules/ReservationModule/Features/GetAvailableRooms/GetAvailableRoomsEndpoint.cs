@@ -14,7 +14,6 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
     public override void Configure()
     {
         Get("rooms");
-        AllowAnonymous();
         Group<UserEndpointGroup>();
     }
 

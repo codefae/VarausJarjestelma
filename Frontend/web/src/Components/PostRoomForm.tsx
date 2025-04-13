@@ -1,10 +1,5 @@
 import { useState } from "react";
-
-export interface PostRoomRequest {
-    name: string;
-    defaultOpenDate: Date;
-    defaultCloseDate: Date;
-}
+import {PostRoomRequest} from "../models/postRoomRequest.ts";
 
 const PostRoomForm = () => {
     const [formData, setFormData] = useState<PostRoomRequest>({
