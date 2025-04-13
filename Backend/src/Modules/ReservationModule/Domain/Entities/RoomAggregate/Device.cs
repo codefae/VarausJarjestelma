@@ -1,10 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 
 public class Device
 {
-    public Guid Id { get; private set; }
+    public Guid Id { get; private set; } 
+    [MaxLength(100)]
     public string Name { get; private set; }
+    [MaxLength(20)]
     public string DeviceType { get; private set; }
+    [MaxLength(500)]
     public string Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
@@ -17,9 +22,8 @@ public class Device
     public Device() { }
 #pragma warning restore CS8618, CS9264
 
-    public Device(string name, string deviceType, string description,  Guid? id = null)
+    public Device(string name, string deviceType, string description)
     {
-        Id = id ?? Guid.NewGuid();
         Name = TrimAndValidateName(name);
         DeviceType = TrimAndValidateDeviceType(deviceType);
         Description = TrimAndValidateDescription(description);

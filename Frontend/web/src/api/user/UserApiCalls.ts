@@ -10,6 +10,7 @@ const RESERVATION_BASE_URL = BASE_URL + '/reservations';
 export const UserApiCalls = {
     postReservation: async (postReservationRequest: PostReservationRequest) => {
         try {
+            console.log(postReservationRequest)
             const response = await fetch(`${RESERVATION_BASE_URL}`, {
                 method: 'POST',
                 headers: {
@@ -18,7 +19,7 @@ export const UserApiCalls = {
                 body: JSON.stringify(postReservationRequest),
             });
             if (!response.ok) {
-                throw new Error('Failed to post reservation');
+                throw new Error(`Failed to post reservation: ${response.statusText}`);
             }
             return await response.json();
         } catch (error) {

@@ -12,13 +12,13 @@ const ReservationForm = ({roomId}: ReservationFormProps) => {
         userId: '49ba0ed2-e353-4cd3-a06b-e55d6bbe8c97',
         reservationDto: {
             roomId: roomId,
-            reservationType: '',
+            reservationType: 'RoomReservation',
             timeSlotDto: {
                 startTime: '',
                 endTime: ''
             },
             day: new Date(),
-            deviceId: ''
+            deviceId: null
         }
     });
 
@@ -66,9 +66,11 @@ const ReservationForm = ({roomId}: ReservationFormProps) => {
         // Here you can make the API call to submit the reservation request
         try {
             // Replace with actual API call
-            UserApiCalls.postReservation(formData)
+            await UserApiCalls.postReservation(formData)
+
             console.log('Reservation successful:');
         } catch (error) {
+            alert(error)
             console.error('Reservation failed:', error);
         }
     };
@@ -126,16 +128,18 @@ const ReservationForm = ({roomId}: ReservationFormProps) => {
                 />
             </div>
 
-            <div className="form-group">
-                <label htmlFor="deviceId">Device ID (Optional)</label>
-                <input
-                    type="text"
-                    id="deviceId"
-                    name="deviceId"
-                    value={formData.reservationDto.deviceId || ''}
-                    onChange={handleChange}
-                />
-            </div>
+            {formData.reservationDto.reservationType == 'DeviceReservation' ?
+                (<div className="form-group">
+                    <label htmlFor="deviceId">Device ID (Optional)</label>
+                    <input
+                        type="text"
+                        id="deviceId"
+                        name="deviceId"
+                        value={formData.reservationDto.deviceId || ''}
+                        onChange={handleChange}
+                    />
+                </div>): <></>}
+
 
             <button type="submit" className="submit-button">Submit Reservation</button>
         </form>

@@ -5,11 +5,10 @@ namespace src.Modules.ReservationModule.Domain.Entities.RoomAggregate;
 public class Room 
 {
     public Guid Id { get; private set; }
+    [MaxLength(100)]
     public string Name { get; private set; }
     public OpenRules OpenRules { get; private set; }
-
-    private List<Device> devices = [];
-    public IReadOnlyList<Device> Devices => devices.AsReadOnly();
+    public ICollection<Device> Devices { get; private set; } = new List<Device>();
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
@@ -27,7 +26,7 @@ public class Room
         OpenRules = new OpenRules(
             defaultOpenDate,
             defaultCloseDate);
-        devices = [];
+        Devices = [];
         CreatedAt = DateTime.Now;
         UpdatedAt = DateTime.Now;
     }
@@ -54,7 +53,7 @@ public class Room
             return false; // Device with the same name already exists
         }
 
-        devices.Add(newDevice);
+        Devices.Add(newDevice);
         UpdatedAt = DateTime.Now;
         return true;
     }
@@ -67,7 +66,7 @@ public class Room
             return false; // Device not found
         }
 
-        devices.Remove(device);
+        Devices.Remove(device);
         UpdatedAt = DateTime.Now;
         return true;
     }

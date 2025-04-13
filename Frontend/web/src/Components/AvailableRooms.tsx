@@ -83,6 +83,17 @@ const AvailableRooms = () => {
                             <p><strong>Room Name:</strong> {roomInfo.roomName}</p>
                             <p><strong>Capacity:</strong> {}</p>
                             <p><strong>Location:</strong> {}</p>
+                            <ul >
+                                {roomInfo.reservationDtos.map(reservation => (
+                                    <li>
+                                        <p><strong>Reservation type: </strong>{reservation.reservationType}</p>
+                                        <p><strong>Date: </strong>{reservation.day.toString().split('T')[0]}</p>
+                                        <p><strong>Start time: </strong>{reservation.timeSlotDto.startTime}</p>
+                                        <p><strong>End time: </strong>{reservation.timeSlotDto.endTime}</p>
+                                        {reservation.reservationType == "DeviceReservation"?<p><strong>Device id:</strong> {reservation.deviceId}</p>:<></>}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
                         <ReservationForm roomId={roomInfo.roomId} />
                         </div>

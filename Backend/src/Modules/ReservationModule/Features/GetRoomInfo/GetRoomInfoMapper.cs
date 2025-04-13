@@ -22,6 +22,7 @@ public class GetRoomInfoMapper : ResponseMapper<GetRoomInfoResponse, (List<Reser
 
         ReservationDtos = e.reservations.Select(x => new ReservationDto()
         {
+            Id = x.Id.ToString(),
             RoomId = x.RoomId.ToString(),
             ReservationType = x.ReservationDetails.Type.ToString(),
             Day = x.Day,

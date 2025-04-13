@@ -38,14 +38,17 @@ public class PostDeviceToRoomEndpoint(
                 return TypedResults.NotFound("Room not found!");
             }
             
-            
             if (!room.AddDevice(device))
             {
                 await unitOfWork.RollbackTransactionAsync(ct);
                 return TypedResults.Problem("A device with the same name already exists in the room!");
             }
             
-            await unitOfWork.Rooms.UpdateRoomAsync(room, ct);
+            if (!await unitOfWork.Rooms.UpdateRoomAsync(room, ct))
+            {
+                await unitOfWork.RollbackTransactionAsync(ct);
+                return TypedResults.Problem("Room update failed!");
+            };
             await unitOfWork.CommitTransactionAsync(ct);
 
             return TypedResults.Ok("Device added to room successfully.");
