@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import {GetAvailableRoomsResponse, RoomDetails} from "../models/getAvailableRoomsResponse.ts";
 import {GetRoomInfoResponse} from "../models/getRoomInfoResponse.ts";
 import {UserApiCalls} from "../api/user/UserApiCalls.ts";
@@ -63,7 +63,7 @@ const AvailableRooms = () => {
                             <div className="room-name">
                                 {room.roomName}
                             </div>
-                            <button className="info-button" onClick={() =>infoButtonClicked(room)}>
+                            <button className="info-button" onClick={() => infoButtonClicked(room)}>
                                 Get Room Info
                             </button>
                         </li>
@@ -76,28 +76,68 @@ const AvailableRooms = () => {
             ) : roomInfo ? (
 
 
-                    <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-                        <div  className="modal">
+                <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+                    <div className="modal">
                         <div className="room-details">
                             <h3>Room Details</h3>
-                            <p><strong>Room Name:</strong> {roomInfo.roomName}</p>
-                            <p><strong>Capacity:</strong> {}</p>
-                            <p><strong>Location:</strong> {}</p>
-                            <ul >
+                            <p><strong>Room name: </strong>{roomInfo.roomName}</p>
+                            <p><strong>Opening date: </strong>{roomInfo.openTimes.defaultOpenDate.toString().split('T')[0]}</p>
+                            <p><strong>Closing date: </strong>{roomInfo.openTimes.defaultCloseDate.toString().split('T')[0]}</p>
+                            <p>
+                                <strong>Monday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.monday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.monday.endTime}
+                            </p>
+                            <p>
+                                <strong>Tuesday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.tuesday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.tuesday.endTime}
+                            </p>
+                            <p>
+                                <strong>Wednesday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.wednesday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.wednesday.endTime}
+                            </p>
+                            <p>
+                                <strong>Thursday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.thursday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.thursday.endTime}
+                            </p>
+                            <p>
+                                <strong>Friday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.friday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.friday.endTime}
+                            </p>
+                            <p>
+                                <strong>Saturday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.saturday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.saturday.endTime}
+                            </p>
+                            <p>
+                                <strong>Sunday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.sunday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.sunday.endTime}
+                            </p>
+
+                            {roomInfo.roomDevices.length != 0 ?
+                                (<>
+                                    <h3>Devices</h3>
+                                    {roomInfo.roomDevices.map(device => (
+                                        <p><strong></strong>{device.name}</p>
+                                    ))}
+                                </>):null}
+
+                            {roomInfo.openTimes.openTimesSingleDays.length !== 0 ?
+                                <>
+                                    <h3>Exceptions</h3>
+                                    {roomInfo.openTimes.openTimesSingleDays.map(openTime => (
+                                        <p><strong></strong>{openTime.day.toString().split('T')[0]}</p>
+                                    ))}
+                                </> : null
+                            }
+                            <h3>Reservations</h3>
+                            <ul>
                                 {roomInfo.reservationDtos.map(reservation => (
-                                    <li>
+                                    <div style={{padding: "30px ", margin: "20px",  border: "1px solid black", borderRadius: "5px"}}>
                                         <p><strong>Reservation type: </strong>{reservation.reservationType}</p>
                                         <p><strong>Date: </strong>{reservation.day.toString().split('T')[0]}</p>
                                         <p><strong>Start time: </strong>{reservation.timeSlotDto.startTime}</p>
                                         <p><strong>End time: </strong>{reservation.timeSlotDto.endTime}</p>
-                                        {reservation.reservationType == "DeviceReservation"?<p><strong>Device id:</strong> {reservation.deviceId}</p>:<></>}
-                                    </li>
+                                        {reservation.reservationType == "DeviceReservation" ?
+                                            <p><strong>Device name: </strong> {roomInfo.roomDevices.find(x =>x.id == reservation.deviceId)!.name}</p> : <></>}
+                                    </div>
                                 ))}
                             </ul>
                         </div>
-                        <ReservationForm roomId={roomInfo.roomId} />
-                        </div>
-                    </Modal>
+                        <ReservationForm roomId={roomInfo.roomId} devices={roomInfo.roomDevices}/>
+                    </div>
+                </Modal>
 
 
             ) : null}

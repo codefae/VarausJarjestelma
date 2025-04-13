@@ -105,7 +105,7 @@ public class Reservation
     {
         return otherReservations.Where(reservation =>
             reservation.RoomId == RoomId &&
-            reservation.Day == Day &&
+            reservation.Day.Date == Day.Date &&
             reservation.TimeSlot.ConflictsWith(TimeSlot) &&
             (
                 reservation.ReservationDetails.Type == ReservationType.RoomReservation ||

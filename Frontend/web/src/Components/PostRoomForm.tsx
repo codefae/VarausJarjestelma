@@ -1,5 +1,7 @@
-import { useState } from "react";
-import {PostRoomRequest} from "../models/postRoomRequest.ts";
+import { useState } from 'react';
+import { PostRoomRequest } from "../models/postRoomRequest.ts";
+import './ReservationForm.css'; // Reuse the existing CSS file for consistent styling
+import {AdminApiCalls} from '../api/admin/AdminApiCalls.ts'
 
 const PostRoomForm = () => {
     const [formData, setFormData] = useState<PostRoomRequest>({
@@ -8,6 +10,7 @@ const PostRoomForm = () => {
         defaultCloseDate: new Date()
     });
 
+    // Handle form field changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -16,48 +19,63 @@ const PostRoomForm = () => {
         }));
     };
 
+    // Handle form submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch("/api/rooms", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData)
-            });
-            if (!response.ok) throw new Error("Failed to create room");
+            await AdminApiCalls.addRoom(formData)
             alert("Room created successfully!");
         } catch (error) {
             console.error(error);
-            alert("Error creating room");
+            alert(error);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Room Name"
-                required
-            />
-            <input
-                type="date"
-                name="defaultOpenDate"
-                value={formData.defaultOpenDate.toISOString().split("T")[0]}
-                onChange={handleChange}
-                required
-            />
-            <input
-                type="date"
-                name="defaultCloseDate"
-                value={formData.defaultCloseDate.toISOString().split("T")[0]}
-                onChange={handleChange}
-                required
-            />
-            <button type="submit">Create Room</button>
-        </form>
+        <div className="container">
+            <form onSubmit={handleSubmit} className="reservation-form">
+                <h2>Create a Room</h2>
+
+                <div className="form-group">
+                    <label htmlFor="name">Room Name</label>
+                    <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        placeholder="Room Name"
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="defaultOpenDate">Default Open Date</label>
+                    <input
+                        type="date"
+                        name="defaultOpenDate"
+                        id="defaultOpenDate"
+                        value={formData.defaultOpenDate.toISOString().split("T")[0]}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="defaultCloseDate">Default Close Date</label>
+                    <input
+                        type="date"
+                        name="defaultCloseDate"
+                        id="defaultCloseDate"
+                        value={formData.defaultCloseDate.toISOString().split("T")[0]}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <button type="submit" className="submit-button">Create Room</button>
+            </form>
+        </div>
     );
 };
 

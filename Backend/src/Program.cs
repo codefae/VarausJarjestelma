@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseDefaultExceptionHandler(useGenericReason: true)
+app.UseDefaultExceptionHandler(useGenericReason: false)
     .UseFastEndpoints()
     .UseSwaggerGen();
 

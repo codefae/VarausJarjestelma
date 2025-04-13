@@ -3,7 +3,7 @@ import {PostReservationRequest} from "../../models/postReservationRequest.ts";
 import {GetRoomInfoResponse} from "../../models/getRoomInfoResponse.ts";
 import {GetAvailableRoomsResponse} from "../../models/getAvailableRoomsResponse.ts";
 
-const BASE_URL = 'http://192.168.159.23:5121/user';
+const BASE_URL = 'http://localhost:5121/user';
 const ROOM_BASE_URL = BASE_URL + '/rooms';
 const RESERVATION_BASE_URL = BASE_URL + '/reservations';
 
@@ -19,7 +19,17 @@ export const UserApiCalls = {
                 body: JSON.stringify(postReservationRequest),
             });
             if (!response.ok) {
-                throw new Error(`Failed to post reservation: ${response.statusText}`);
+
+                // Parse the error message from the response
+                const errorData = await response.json();
+
+                // Optionally, log the error data for debugging
+                console.error('Error Response:', errorData.reason);
+                console.error('Error Response:', errorData.detail);
+
+
+                // Throw the error message
+                throw new Error(errorData?.reason ?? "" + errorData.detail);
             }
             return await response.json();
         } catch (error) {

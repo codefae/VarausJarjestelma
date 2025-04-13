@@ -2,15 +2,18 @@ import { useState } from 'react';
 import {PostReservationRequest} from "../models/postReservationRequest.ts";
 import {UserApiCalls} from "../api/user/UserApiCalls.ts";
 import './ReservationForm.css';
+import {DeviceDto} from "../models/deviceDto.ts";
 
 interface ReservationFormProps {
     roomId: string
+    devices: DeviceDto[]
 }
 
-const ReservationForm = ({roomId}: ReservationFormProps) => {
+const ReservationForm = ({roomId, devices}: ReservationFormProps) => {
     const [formData, setFormData] = useState<PostReservationRequest>({
         userId: '49ba0ed2-e353-4cd3-a06b-e55d6bbe8c97',
         reservationDto: {
+            id: null,
             roomId: roomId,
             reservationType: 'RoomReservation',
             timeSlotDto: {
@@ -25,6 +28,9 @@ const ReservationForm = ({roomId}: ReservationFormProps) => {
     // Handle form field changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+
+
+
         setFormData(prevState => ({
             ...prevState,
             reservationDto: {
@@ -129,16 +135,23 @@ const ReservationForm = ({roomId}: ReservationFormProps) => {
             </div>
 
             {formData.reservationDto.reservationType == 'DeviceReservation' ?
-                (<div className="form-group">
-                    <label htmlFor="deviceId">Device ID (Optional)</label>
-                    <input
-                        type="text"
-                        id="deviceId"
-                        name="deviceId"
-                        value={formData.reservationDto.deviceId || ''}
-                        onChange={handleChange}
-                    />
-                </div>): <></>}
+                (
+
+                        <div className="form-group">
+                            <label htmlFor="reservationType">Device</label>
+
+                            <select
+                                id="deviceId"
+                                name="deviceId"
+                                value={formData.reservationDto.deviceId!}
+                                onChange={handleChange}
+                                required
+                            >
+                                {devices.map(device => (<>
+                                    <option value={device.id}>{device.name}</option>
+                                </>))}
+                            </select>
+                        </div>): <></>}
 
 
             <button type="submit" className="submit-button">Submit Reservation</button>
