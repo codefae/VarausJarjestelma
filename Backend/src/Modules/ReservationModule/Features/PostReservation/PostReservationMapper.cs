@@ -13,9 +13,9 @@ public class PostReservationMapper : RequestMapper<PostReservationRequest, Reser
 
         if (!Guid.TryParse(r.ReservationDto.RoomId, out var roomId))
             throw new ArgumentException("Invalid room id format!");
-        
+
         Guid? deviceId = null;
-        if (r.ReservationDto.DeviceId != null)
+        if (r.ReservationDto.ReservationType == ReservationType.DeviceReservation.ToString())
         {
             if (!Guid.TryParse(r.ReservationDto.DeviceId, out var parsedDeviceId))
                 throw new ArgumentException("Invalid device id format!");

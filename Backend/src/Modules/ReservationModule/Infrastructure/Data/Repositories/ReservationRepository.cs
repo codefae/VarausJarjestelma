@@ -57,6 +57,6 @@ public class ReservationRepository(ApplicationDbContext context) : IReservationR
 
     public async Task<IEnumerable<Reservation>> GetByRoomAndDateAsync(Guid roomId, DateTime date,
         CancellationToken cancellationToken) =>
-        await context.Reservations.Where(r => r.RoomId == roomId && r.Day == date).ToListAsync(cancellationToken)
+        await context.Reservations.Where(r => r.RoomId == roomId && r.Day.Date == date.Date).ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 }

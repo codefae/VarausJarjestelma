@@ -5,7 +5,8 @@ namespace src.Modules.ReservationModule.Shared.Dtos;
 
 public class ReservationDto
 {
-    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Id { get; init; }
     public required string RoomId { get; init; } 
     public required string ReservationType { get; init; }
     public required TimeSlotDto TimeSlotDto { get; init; }

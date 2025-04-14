@@ -1,6 +1,11 @@
+import AvailableRooms from "../Components/AvailableRooms.tsx";
 
 const User = () => {
-    return <h1>user</h1>
-}
+    return (
+        <div >
+            <AvailableRooms isAdmin={false} />
+        </div>
+    );
+};
 
-export default User
+export default User;

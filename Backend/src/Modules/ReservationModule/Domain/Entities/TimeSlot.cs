@@ -30,5 +30,5 @@ public class TimeSlot
         StartTime < other.EndTime && EndTime > other.StartTime;
 
     public bool IsWithin(TimeSlot other) =>
-        StartTime >= other.StartTime || EndTime <= other.EndTime;
+        StartTime >= other.StartTime && EndTime <= other.EndTime;
 }

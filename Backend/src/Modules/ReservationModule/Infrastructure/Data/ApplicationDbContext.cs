@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using Namotion.Reflection;
 using Newtonsoft.Json;
 using src.Modules.ReservationModule.Domain.Entities;
 using src.Modules.ReservationModule.Domain.Entities.ReservationAggregate;
@@ -13,18 +14,7 @@ public class ApplicationDbContext : DbContext
         : base(options)
     {
     }
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // Configure DefaultOpenTimesForWeek to own WeekDayTimeSlot
-        base.OnModelCreating(modelBuilder);
-     
-
-        // Or configure the reverse if needed:
-        // modelBuilder.Entity<WeekDayTimeSlot>()
-        //     .OwnsOne(w => w.OpenRules);
-    }
-
+    public DbSet<Device> Devices { get; set; }
     public DbSet<Room> Rooms { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
 }

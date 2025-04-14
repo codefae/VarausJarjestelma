@@ -1,11 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Http.HttpResults;
 using src.Modules.ReservationModule.Shared.Interfaces;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using src.Modules.ReservationModule.Shared.EndPointGroups;
-
 
 namespace src.Modules.ReservationModule.Features.GetAvailableRooms;
 
@@ -18,7 +14,6 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
     public override void Configure()
     {
         Get("rooms");
-        AllowAnonymous();
         Group<UserEndpointGroup>();
     }
 
@@ -32,7 +27,7 @@ public class GetAvailableRoomsEndpoint(IRoomRepository roomRepository) : Endpoin
         }
 
         var response = Map.FromEntity(rooms);
-        
+
         return TypedResults.Ok(response);
     }
 }

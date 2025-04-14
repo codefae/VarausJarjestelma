@@ -11,8 +11,11 @@ public class PostRoomValidator : AbstractValidator<PostRoomRequest>
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Room name is required.")
             .MaximumLength(100).WithMessage("Room name must be under 100 characters.");
+        
         RuleFor(x => x.DefaultOpenDate).NotEmpty().WithMessage("Default open date is required.");
+        
         RuleFor(x => x.DefaultCloseDate).NotEmpty().WithMessage("Default close date is required.");
+        
         RuleFor(x => x).Must(x => x.DefaultCloseDate >= x.DefaultOpenDate)
             .WithMessage("Default close date cannot be greater than default open date.");
     }
