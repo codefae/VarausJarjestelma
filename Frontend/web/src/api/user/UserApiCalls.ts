@@ -3,6 +3,7 @@ import {PostReservationRequest} from "../../models/postReservationRequest.ts";
 import {GetRoomInfoResponse} from "../../models/getRoomInfoResponse.ts";
 import {GetAvailableRoomsResponse} from "../../models/getAvailableRoomsResponse.ts";
 
+
 const BASE_URL = 'http://localhost:5121/user';
 const ROOM_BASE_URL = BASE_URL + '/rooms';
 const RESERVATION_BASE_URL = BASE_URL + '/reservations';
@@ -22,14 +23,24 @@ export const UserApiCalls = {
 
                 // Parse the error message from the response
                 const errorData = await response.json();
-
+                console.log(errorData)
                 // Optionally, log the error data for debugging
                 console.error('Error Response:', errorData.reason);
                 console.error('Error Response:', errorData.detail);
 
+                let errorMessage: string = '';
+                if (errorData?.errors) {
+                    const fieldErrors = Object.entries(errorData.errors)
+                        .map(([key, messages]) => ` ${(messages as string[]).join(", ")}`)
+                        .join("\n");
 
+                    errorMessage += fieldErrors;
+                    throw new Error(errorMessage)
+                }
+
+                console.error(errorMessage)
                 // Throw the error message
-                throw new Error(errorData?.reason ?? "" + errorData.detail);
+                throw new Error(errorData!.reason ?? "" + errorData?.detail?? '');
             }
             return await response.json();
         } catch (error) {
@@ -41,10 +52,10 @@ export const UserApiCalls = {
     getAvailableRooms: async (): Promise<GetAvailableRoomsResponse> =>{
       try {
           const response =  await fetch(`${ROOM_BASE_URL}`);
-          if (!response.ok) {
-              throw new Error('Failed to fetch room information');
-          }
 
+          if (!response.ok) {
+              return {availableRooms: []}
+          }
           // Parse the JSON directly from the response
           return  await response.json();
       } catch (error) {
@@ -61,7 +72,17 @@ export const UserApiCalls = {
             }
 
             // Parse the JSON directly from the response
+            if (!response.ok) {
+                const errorData = await response.json();
 
+                // Optionally, log the error data for debugging
+                console.error('Error Response:', errorData.reason);
+                console.error('Error Response:', errorData.detail);
+
+
+                // Throw the error message
+                throw new Error(errorData?.reason ?? "" + errorData.detail);
+            }
             return await response.json();;
         } catch (error) {
             console.error(`Error fetching room info for ID ${roomId}:`, error);

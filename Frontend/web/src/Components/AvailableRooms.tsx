@@ -5,28 +5,31 @@ import {UserApiCalls} from "../api/user/UserApiCalls.ts";
 import ReservationForm from "./ReservationForm.tsx";
 import './AvailableRooms.css'
 import Modal from "./Modal.tsx";
+import {AdminApiCalls} from "../api/admin/AdminApiCalls.ts";
+import Admin from "../routes/Admin.tsx";
 
-const AvailableRooms = () => {
+interface AvailableRoomsProps {
+    isAdmin: boolean
+}
+
+const AvailableRooms = ({isAdmin}: AvailableRoomsProps) => {
     const [availableRooms, setAvailableRooms] = useState<GetAvailableRoomsResponse | null>(null);
     const [roomInfo, setRoomInfo] = useState<GetRoomInfoResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadingRoomInfo, setLoadingRoomInfo] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-
+    const fetchRooms = async () => {
+        try {
+            const data = await UserApiCalls.getAvailableRooms();
+            setAvailableRooms(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
     // Fetch available rooms when component mounts
     useEffect(() => {
-        const fetchRooms = async () => {
-            try {
-                const data = await UserApiCalls.getAvailableRooms();
-                setAvailableRooms(data);
-            } catch (error) {
-                console.error(error);
-                alert(error)
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchRooms();
     }, []);
 
@@ -44,9 +47,51 @@ const AvailableRooms = () => {
         }
     };
 
+    const deleteRoom = async (roomId: string) => {
+        setLoading(true);
+        try {
+            await AdminApiCalls.deleteRoom(roomId);
+        } catch (error) {
+            alert(error)
+            console.error(`Error fetching room info for ID ${roomId}:`, error);
+        } finally {
+            alert("Successfully deleted room")
+            await fetchRooms()
+            setLoading(false);
+        }
+    }
+
+    const deleteReservation = async (reservationId: string, roomId: string) => {
+        setLoadingRoomInfo(true);
+        try {
+            await UserApiCalls.deleteReservation(reservationId);
+        } catch (error) {
+            alert(error)
+            console.error('Error deleting reservatino');
+        } finally {
+            fetchRoomInfo(roomId);
+        }
+    }
+
     const infoButtonClicked = (room: RoomDetails) => {
         fetchRoomInfo(room.roomId)
         setModalOpen(true)
+    }
+
+    const reservationAdded = () => {
+        fetchRoomInfo(roomInfo!.roomId!)
+    }
+
+    const deleteDeviceFromRoom =  async ( roomId: string, deviceId: string) => {
+        setLoadingRoomInfo(true);
+        try {
+            await AdminApiCalls.deleteDeviceFromRoom(roomId, deviceId);
+        } catch (error) {
+            alert(error)
+            console.error('Error deleting device');
+        } finally {
+            fetchRoomInfo(roomId);
+        }
     }
     return (
         <div className="container">
@@ -66,6 +111,7 @@ const AvailableRooms = () => {
                             <button className="info-button" onClick={() => infoButtonClicked(room)}>
                                 Get Room Info
                             </button>
+                            {isAdmin ? <button onClick={() => deleteRoom(room.roomId)}>Delete</button> : null}
                         </li>
                     ))}
                 </ul>
@@ -81,8 +127,10 @@ const AvailableRooms = () => {
                         <div className="room-details">
                             <h3>Room Details</h3>
                             <p><strong>Room name: </strong>{roomInfo.roomName}</p>
-                            <p><strong>Opening date: </strong>{roomInfo.openTimes.defaultOpenDate.toString().split('T')[0]}</p>
-                            <p><strong>Closing date: </strong>{roomInfo.openTimes.defaultCloseDate.toString().split('T')[0]}</p>
+                            <p><strong>Opening
+                                date: </strong>{roomInfo.openTimes.defaultOpenDate.toString().split('T')[0]}</p>
+                            <p><strong>Closing
+                                date: </strong>{roomInfo.openTimes.defaultCloseDate.toString().split('T')[0]}</p>
                             <p>
                                 <strong>Monday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.monday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.monday.endTime}
                             </p>
@@ -107,43 +155,73 @@ const AvailableRooms = () => {
 
                             {roomInfo.roomDevices.length != 0 ?
                                 (<>
-                                    <h3>Devices</h3>
-                                    {roomInfo.roomDevices.map(device => (
-                                        <p><strong></strong>{device.name}</p>
-                                    ))}
-                                </>):null}
+                                <h3>Devices</h3>
+                                {roomInfo.roomDevices.map(device => (
+                                    <div style={{ padding: "30px ",
+                                        margin: "20px",
+                                        border: "1px solid black",
+                                        borderRadius: "5px"}}>
+                                        <p><strong>Name: </strong>{device.name}</p>
+                                        <p><strong>Device type: </strong>{device.deviceType}</p>
+                                        <p><strong>Description: </strong>{device.description}</p>
 
-                            {roomInfo.openTimes.openTimesSingleDays.length !== 0 ?
-                                <>
-                                    <h3>Exceptions</h3>
-                                    {roomInfo.openTimes.openTimesSingleDays.map(openTime => (
-                                        <p><strong></strong>{openTime.day.toString().split('T')[0]}</p>
-                                    ))}
-                                </> : null
-                            }
-                            <h3>Reservations</h3>
-                            <ul>
-                                {roomInfo.reservationDtos.map(reservation => (
-                                    <div style={{padding: "30px ", margin: "20px",  border: "1px solid black", borderRadius: "5px"}}>
-                                        <p><strong>Reservation type: </strong>{reservation.reservationType}</p>
-                                        <p><strong>Date: </strong>{reservation.day.toString().split('T')[0]}</p>
-                                        <p><strong>Start time: </strong>{reservation.timeSlotDto.startTime}</p>
-                                        <p><strong>End time: </strong>{reservation.timeSlotDto.endTime}</p>
-                                        {reservation.reservationType == "DeviceReservation" ?
-                                            <p><strong>Device name: </strong> {roomInfo.roomDevices.find(x =>x.id == reservation.deviceId)!.name}</p> : <></>}
+                                        {isAdmin ? <button onClick={() => deleteDeviceFromRoom( roomInfo?.roomId, device.id)}>Delete</button> : null}
                                     </div>
                                 ))}
-                            </ul>
+                                </>
+                                ):null}
+
+                                {roomInfo.openTimes.openTimesSingleDays.length !== 0 ?
+                                    <>
+                                        <h3>Exceptions</h3>
+                                        {roomInfo.openTimes.openTimesSingleDays.map(openTime => (
+                                            <p><strong></strong>{openTime.day.toString().split('T')[0]}</p>
+                                        ))}
+                                    </> : null
+                                }
+                                {roomInfo.reservationDtos.length != 0 ? (
+                                    <>
+                                        <h3>Reservations</h3>
+                                        <ul>
+                                            {roomInfo.reservationDtos.map(reservation => (
+                                                <div style={{
+                                                    padding: "30px ",
+                                                    margin: "20px",
+                                                    border: "1px solid black",
+                                                    borderRadius: "5px"
+                                                }}>
+                                                    <p><strong>Reservation type: </strong>{reservation.reservationType}
+                                                    </p>
+                                                    <p><strong>Date: </strong>{reservation.day.toString().split('T')[0]}
+                                                    </p>
+                                                    <p><strong>Start time: </strong>{reservation.timeSlotDto.startTime}
+                                                    </p>
+                                                    <p><strong>End time: </strong>{reservation.timeSlotDto.endTime}</p>
+                                                    {reservation.reservationType == "DeviceReservation" ?
+                                                        <>
+                                                        <p><strong>Device
+                                                            name: </strong> {roomInfo.roomDevices.find(x => x.id == reservation.deviceId)?.name}
+                                                        </p>
+
+                                                </>: <></>}
+                                                    {isAdmin ? <button
+                                                        onClick={() => deleteReservation(reservation.id!, reservation.roomId)}>Delete</button> : null}
+                                                </div>
+                                            ))}
+                                        </ul>
+                                    </>) : null}
+
+                                </div>
+                                <ReservationForm roomId={roomInfo.roomId} devices={roomInfo.roomDevices}
+                                                 reservationAdded={reservationAdded}/>
+                                </div>
+                                </Modal>
+
+
+                                ) : null}
                         </div>
-                        <ReservationForm roomId={roomInfo.roomId} devices={roomInfo.roomDevices}/>
-                    </div>
-                </Modal>
+                        );
+                        };
 
 
-            ) : null}
-        </div>
-    );
-};
-
-
-export default AvailableRooms;
+                        export default AvailableRooms;

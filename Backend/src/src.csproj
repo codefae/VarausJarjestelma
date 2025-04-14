@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Modules\ReservationModule\Features\Admin\PatchOpenRulesForRoom\" />
       <Folder Include="Modules\ReservationModule\Shared\EndPointGroups\" />
     </ItemGroup>
 </Project>

@@ -13,6 +13,10 @@ const PostDeviceToRoomForm = () => {
             try {
                 const data = await UserApiCalls.getAvailableRooms();
                 setAvailableRooms(data);
+                setFormData(prevState => ({
+                    ...prevState,
+                    roomId: data.availableRooms[0]?.roomId ?? "" // or whatever new value you want to set
+                }));
             } catch (error) {
                 console.error(error);
                 alert(error)
@@ -55,7 +59,7 @@ const PostDeviceToRoomForm = () => {
         }
     };
 
-    return (
+    return availableRooms?.availableRooms.length != 0 ? (
         <div className="container">
             <form onSubmit={handleSubmit} className="reservation-form">
                 <h2>Add Device to Room</h2>
@@ -71,9 +75,9 @@ const PostDeviceToRoomForm = () => {
                         {availableRooms?.availableRooms.map(roomDetails=> (
                             <option value={roomDetails.roomId}>
                                 {roomDetails.roomName}
-                        </option>))}
+                            </option>))}
                     </select>
-                    </div>
+                </div>
 
                 <div className="form-group">
                     <label htmlFor="name">Device Name</label>
@@ -117,7 +121,9 @@ const PostDeviceToRoomForm = () => {
                 <button type="submit" className="submit-button">Add Device</button>
             </form>
         </div>
-    );
+    ): null
+
+
 };
 
 export default PostDeviceToRoomForm;

@@ -7,9 +7,10 @@ import {DeviceDto} from "../models/deviceDto.ts";
 interface ReservationFormProps {
     roomId: string
     devices: DeviceDto[]
+    reservationAdded: () => void
 }
 
-const ReservationForm = ({roomId, devices}: ReservationFormProps) => {
+const ReservationForm = ({roomId, devices, reservationAdded}: ReservationFormProps) => {
     const [formData, setFormData] = useState<PostReservationRequest>({
         userId: '49ba0ed2-e353-4cd3-a06b-e55d6bbe8c97',
         reservationDto: {
@@ -29,7 +30,17 @@ const ReservationForm = ({roomId, devices}: ReservationFormProps) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-
+        if (name == "reservationType"){
+            if(value == "DeviceReservation"){
+                setFormData(prevState => ({
+                    ...prevState,
+                    reservationDto: {
+                        ...prevState.reservationDto,
+                        deviceId: devices[0].id
+                    }
+                }));
+            }
+        }
 
         setFormData(prevState => ({
             ...prevState,
@@ -75,6 +86,7 @@ const ReservationForm = ({roomId, devices}: ReservationFormProps) => {
             await UserApiCalls.postReservation(formData)
 
             console.log('Reservation successful:');
+            reservationAdded()
         } catch (error) {
             alert(error)
             console.error('Reservation failed:', error);
@@ -97,7 +109,7 @@ const ReservationForm = ({roomId, devices}: ReservationFormProps) => {
                     required
                 >
                     <option value="RoomReservation">Room</option>
-                    <option value="DeviceReservation">Device</option>
+                    {devices.length != 0 ? <option value="DeviceReservation">Device</option> : null}
                 </select>
             </div>
 

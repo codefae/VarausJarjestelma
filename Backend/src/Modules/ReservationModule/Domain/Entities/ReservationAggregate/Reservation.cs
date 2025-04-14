@@ -46,8 +46,8 @@ public class Reservation
         Guid? deviceId = null,
         Guid? id = null)
     {
-        RoundToNearest15Minutes(startTime);
-        RoundToNearest15Minutes(endTime);
+        startTime = RoundToNearest15Minutes(startTime);
+        endTime = RoundToNearest15Minutes(endTime);
         ValidateStartTimeIsInFuture(day, startTime);
 
         ReservationDetails reservationDetails;
@@ -74,7 +74,7 @@ public class Reservation
         DateTime defaultOpenDate,
         DateTime defaultClosingDate)
     {
-        if (Day < defaultOpenDate || Day > defaultClosingDate)
+        if (Day.Date < defaultOpenDate.Date || Day.Date > defaultClosingDate.Date)
             return true;
 
         var closedOnTimeSlotsConflicts = exceptionsToWeekDayRulesReadOnly
@@ -108,6 +108,7 @@ public class Reservation
             reservation.Day.Date == Day.Date &&
             reservation.TimeSlot.ConflictsWith(TimeSlot) &&
             (
+               ( ReservationDetails.Type == ReservationType.RoomReservation&& reservation.ReservationDetails.Type == ReservationType.DeviceReservation) ||
                 reservation.ReservationDetails.Type == ReservationType.RoomReservation ||
                 reservation.ReservationDetails.Type == ReservationType.EventReservation ||
                 (reservation.ReservationDetails.Type == ReservationType.DeviceReservation &&

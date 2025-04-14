@@ -33,18 +33,15 @@ public class DeleteDeviceFromRoomEndpoint(
                 return TypedResults.NotFound("Device not found.");
             
             var reservations = await unitOfWork.Reservations.GetByRoomAsync(roomId, ct);
-            var deviceReservationsGroups = reservations
-                .Where(x => x.ReservationDetails.Type == ReservationType.DeviceReservation)
-                .GroupBy(x => x.ReservationDetails.DeviceId == deviceId)
+            var deletableReservations = reservations
+                .Where(x => x.ReservationDetails.Type == ReservationType.DeviceReservation && x.ReservationDetails.DeviceId == deviceId)
                 .ToList();
 
+            
 
-            var deletableReservations = deviceReservationsGroups
-                .FirstOrDefault(group => group.Key); 
-
-            if (deletableReservations != null)
+            if (deletableReservations.Count != 0)
             {
-                await unitOfWork.Reservations.DeleteManyAsync(deletableReservations.Select(x => x.UserId), ct);
+                await unitOfWork.Reservations.DeleteManyAsync(deletableReservations.Select(x => x.Id), ct);
                 
                 await unitOfWork.CommitTransactionAsync(ct);
                 

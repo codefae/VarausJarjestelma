@@ -16,15 +16,39 @@ export const AdminApiCalls= {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
+            const errorText = await response.text();
+            let errorData: any= {};
 
+            try {
+                errorData = errorText ? JSON.parse(errorText) : {};
+            } catch (e) {
+                console.warn("Failed to parse error response as JSON:", e);
+            }
+
+            let errorMessage = ''
             // Optionally, log the error data for debugging
             console.error('Error Response:', errorData.reason);
             console.error('Error Response:', errorData.detail);
 
+            if (errorData?.errors) {
+
+
+                const fieldErrors = Object.entries(errorData.errors)
+                    .map(([key, messages]) => ` ${(messages as string[]).join(", ")}`)
+                    .join("\n");
+
+                errorMessage += fieldErrors;
+                throw new Error(errorMessage + errorData)
+            }
+
+            console.error(errorData)
 
             // Throw the error message
-            throw new Error(errorData?.reason ?? "" + errorData.detail);
+            throw new Error(
+                errorData?.reason && errorData?.detail
+                    ? `${errorData.reason}: ${errorData.detail}`
+                    : errorData?.reason || errorData?.detail || errorData|| 'Unknown error occurred'
+            );
         }
     },
 
@@ -32,28 +56,36 @@ export const AdminApiCalls= {
 
 
      async addDeviceToRoom(postDeviceToRoomRequest: PostDeviceToRoomRequest) {
-        console.log(postDeviceToRoomRequest)
-        const response = await fetch(`${ROOM_BASE_URL}/device`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(postDeviceToRoomRequest),
-        });
+
+         const response = await fetch(`${ROOM_BASE_URL}/device`, {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/json",
+             },
+             body: JSON.stringify(postDeviceToRoomRequest),
+         });
 
          if (!response.ok) {
              const errorText = await response.text();
-             let errorData: any = {};
+             let errorData: any= {};
 
              try {
                  errorData = errorText ? JSON.parse(errorText) : {};
              } catch (e) {
                  console.warn("Failed to parse error response as JSON:", e);
              }
+             let errorMessage: string = ''
+             if (errorData?.errors) {
+                 const fieldErrors = Object.entries(errorData.errors)
+                     .map(([key, messages]) => ` ${(messages as string[]).join(", ")}`)
+                     .join("\n");
 
-             console.error("Error Response:", errorData.reason);
-             console.error("Error Detail:", errorData.detail);
+                 errorMessage += fieldErrors;
 
+                 console.error("Error Response:", errorData.reason);
+                 console.error("Error Detail:", errorData.detail);
+                 throw new Error(errorMessage)
+             }
              throw new Error(
                  errorData?.reason && errorData?.detail
                      ? `${errorData.reason}: ${errorData.detail}`
@@ -64,5 +96,31 @@ export const AdminApiCalls= {
 
          return await response.json(); // or return void if nothing is returned
 
-     }
+     },
+    async deleteRoom(roomId: string){
+        const response = await fetch(`${ROOM_BASE_URL}/${roomId}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+
+
+
+            // Throw the error message
+            throw new Error("falied to delete");
+        }
+    },
+    async deleteDeviceFromRoom(roomId: string, deviceId: string){
+        const response = await fetch(`${ROOM_BASE_URL}/${roomId}/device/${deviceId}`, {
+            method: "DELETE",
+        });
+
+        if (!response.ok) {
+
+
+
+            // Throw the error message
+            throw new Error("falied to delete");
+        }
+    }
 }

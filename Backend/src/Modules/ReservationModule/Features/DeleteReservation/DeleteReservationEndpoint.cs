@@ -12,7 +12,7 @@ public class DeleteReservationEndpoint(IReservationRepository reservationReposit
 {
     public override void Configure()
     {
-        Delete("reservation/{id:guid}");
+        Delete("reservations/{id:guid}");
         AllowAnonymous();
         Group<UserEndpointGroup>();
     }
