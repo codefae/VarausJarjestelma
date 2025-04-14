@@ -1,102 +1,86 @@
-import { useState } from "react";
-
+import { useState } from 'react';
 import './ReservationForm.css';
-import { AdminApiCalls } from "../api/admin/AdminApiCalls.ts";
-import {WeeklyScheduleDto} from "../models/WeeklyScheduleDto.ts";
-import {TimeSlotDto} from "../models/timeSlotDto.ts";
+import { AdminApiCalls } from '../api/admin/AdminApiCalls.ts';
+import {OpenRulesDto} from "../models/openRulesDto.ts";
 import {PatchOpenRulesForRoomRequest} from "../models/PatchOpenRulesForRoomRequest.ts";
+import {WeeklyScheduleDto} from "../models/WeeklyScheduleDto.ts";
 
-const daysOfWeek: (keyof WeeklyScheduleDto)[] = [
-    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
-];
 
-const defaultTimeSlot: TimeSlotDto = {
-    startTime: "08:00:00",
-    endTime: "16:00:00"
-};
+interface OpenRulesFormProps {
+    roomId: string;
+    initialOpenRules: OpenRulesDto;
+    reservationAdded: () => void;
+}
 
-const PatchOpenRulesForm = () => {
-    const [roomId, setRoomId] = useState<string>("");
-    const [weeklySchedule, setWeeklySchedule] = useState<WeeklyScheduleDto>(() =>
-        Object.fromEntries(daysOfWeek.map(day => [day, { ...defaultTimeSlot }])) as WeeklyScheduleDto
-    );
+const OpenRulesForm = ({ roomId, initialOpenRules, reservationAdded }: OpenRulesFormProps) => {
+    const [formData, setFormData] = useState<PatchOpenRulesForRoomRequest>({
+        roomId,
+        openRules: initialOpenRules,
+    });
 
-    const handleTimeChange = (
-        day: keyof WeeklyScheduleDto,
-        field: keyof TimeSlotDto,
+    const handleTimeSlotChange = (
+        day: keyof WeeklyScheduleDto, // Ensure 'day' is a valid key of WeeklyScheduleDto
+        field: 'startTime' | 'endTime',
         value: string
     ) => {
-        setWeeklySchedule(prev => ({
+        setFormData(prev => ({
             ...prev,
-            [day]: {
-                ...prev[day],
-                [field]: value
-            }
+            openRules: {
+                ...prev.openRules,
+                defaultOpenTimesForWeek: {
+                    ...prev.openRules.defaultOpenTimesForWeek,
+                    [day]: {
+                        ...prev.openRules.defaultOpenTimesForWeek[day],
+                        [field]: value,
+                    },
+                },
+            },
         }));
     };
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const payload: PatchOpenRulesForRoomRequest = {
-            roomId,
-            openRules: {
-                defaultOpenDate: new Date(),
-                defaultCloseDate: new Date(),
-                openTimesSingleDays: [],
-                defaultOpenTimesForWeek: weeklySchedule
-            }
-        };
-
         try {
-            await AdminApiCalls.patchOpenRulesForRoom(payload);
-            alert("Room open rules updated!");
+            await AdminApiCalls.patchOpenRulesForRoom(formData);
+            alert('Open rules updated successfully!');
+            reservationAdded();
         } catch (error) {
             console.error(error);
-            alert("Failed to patch open rules.");
+            alert(error);
         }
     };
 
     return (
         <div className="container">
             <form onSubmit={handleSubmit} className="reservation-form">
-                <h2>Set Weekly Open Hours</h2>
-                <div className="form-group">
-                    <label htmlFor="roomId">Room ID</label>
-                    <input
-                        type="text"
-                        id="roomId"
-                        name="roomId"
-                        value={roomId}
-                        onChange={e => setRoomId(e.target.value)}
-                        placeholder="Room ID"
-                        required
-                    />
-                </div>
+                <h2>Edit Weekly Open Rules</h2>
 
-                {daysOfWeek.map(day => (
-                    <div className="form-group" key={day}>
+                {Object.entries(formData.openRules.defaultOpenTimesForWeek).map(([day, timeSlot]) => (
+                    <div key={day} className="form-group">
                         <label>{day.charAt(0).toUpperCase() + day.slice(1)}</label>
-                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                        <div className="time-inputs">
                             <input
                                 type="time"
-                                value={weeklySchedule[day].startTime.slice(0, 5)}
-                                onChange={e => handleTimeChange(day, "startTime", e.target.value + ":00")}
+                                value={timeSlot.startTime}
+                                onChange={e => handleTimeSlotChange(day as keyof WeeklyScheduleDto, 'startTime', e.target.value)} // Correctly cast to keyof WeeklyScheduleDto
                                 required
                             />
+                            <span>to</span>
                             <input
                                 type="time"
-                                value={weeklySchedule[day].endTime.slice(0, 5)}
-                                onChange={e => handleTimeChange(day, "endTime", e.target.value + ":00")}
+                                value={timeSlot.endTime}
+                                onChange={e => handleTimeSlotChange(day as keyof WeeklyScheduleDto, 'endTime', e.target.value)} // Correctly cast to keyof WeeklyScheduleDto
                                 required
                             />
                         </div>
                     </div>
                 ))}
 
-                <button type="submit" className="submit-button">Save Weekly Schedule</button>
+                <button type="submit" className="submit-button">Save Open Rules</button>
             </form>
         </div>
     );
 };
 
-export default PatchOpenRulesForm;
+export default OpenRulesForm;

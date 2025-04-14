@@ -12,7 +12,7 @@ public class PatchOpenRulesForRoomEndpoint(IUnitOfWork unitOfWork, ISendEMailToU
 {
     public override void Configure()
     {
-        Patch("rooms/openrules");
+        Patch("room/openrules");
         Group<AdminEndpointGroup>();
     }
 

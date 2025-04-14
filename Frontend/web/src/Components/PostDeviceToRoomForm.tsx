@@ -64,7 +64,7 @@ const PostDeviceToRoomForm = () => {
             <form onSubmit={handleSubmit} className="reservation-form">
                 <h2>Add Device to Room</h2>
                 <div className="form-group">
-                    <label htmlFor="reservationType">Reservation Type</label>
+                    <label htmlFor="reservationType">Room name</label>
                     <select
                         id="reservationType"
                         name="reservationType"

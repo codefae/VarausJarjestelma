@@ -6,7 +6,7 @@ import ReservationForm from "./ReservationForm.tsx";
 import './AvailableRooms.css'
 import Modal from "./Modal.tsx";
 import {AdminApiCalls} from "../api/admin/AdminApiCalls.ts";
-import Admin from "../routes/Admin.tsx";
+import PaytchOpenRulesForm from "./PaytchOpenRulesForm.tsx";
 
 interface AvailableRoomsProps {
     isAdmin: boolean
@@ -18,6 +18,7 @@ const AvailableRooms = ({isAdmin}: AvailableRoomsProps) => {
     const [loading, setLoading] = useState(true);
     const [loadingRoomInfo, setLoadingRoomInfo] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [modal2Open, setModal2Open] = useState(false)
     const fetchRooms = async () => {
         try {
             const data = await UserApiCalls.getAvailableRooms();
@@ -80,6 +81,11 @@ const AvailableRooms = ({isAdmin}: AvailableRoomsProps) => {
 
     const reservationAdded = () => {
         fetchRoomInfo(roomInfo!.roomId!)
+    }
+
+    const opentimesChanged = () =>{
+        fetchRoomInfo(roomInfo!.roomId!)
+        setModal2Open(false)
     }
 
     const deleteDeviceFromRoom =  async ( roomId: string, deviceId: string) => {
@@ -152,7 +158,10 @@ const AvailableRooms = ({isAdmin}: AvailableRoomsProps) => {
                             <p>
                                 <strong>Sunday: </strong>{roomInfo.openTimes.defaultOpenTimesForWeek.sunday.startTime} - {roomInfo.openTimes.defaultOpenTimesForWeek.sunday.endTime}
                             </p>
-
+                            {isAdmin ? <><button onClick={() => setModal2Open(true)}>Change open times</button></>:null}
+                            <Modal isOpen={modal2Open} onClose={() => setModal2Open(false)}>
+                                <PaytchOpenRulesForm roomId={roomInfo.roomId} initialOpenRules={roomInfo.openTimes} reservationAdded={() =>opentimesChanged()}/>
+                            </Modal>
                             {roomInfo.roomDevices.length != 0 ?
                                 (<>
                                 <h3>Devices</h3>

@@ -1,5 +1,6 @@
 import {PostRoomRequest} from "../../models/postRoomRequest.ts";
 import {PostDeviceToRoomRequest} from "../../models/postDeviceToRoomRequest.ts";
+import {PatchOpenRulesForRoomRequest} from "../../models/PatchOpenRulesForRoomRequest.ts";
 
 const BASE_URL = 'http://localhost:5121/admin';
 const ROOM_BASE_URL = BASE_URL + '/room'; // Admin API:n reittipolku, määritelty backendissä
@@ -51,7 +52,48 @@ export const AdminApiCalls= {
             );
         }
     },
+    // New API call to update open rules for a room
+    async patchOpenRulesForRoom(patchRequest: PatchOpenRulesForRoomRequest) {
+        const response = await fetch(`${ROOM_BASE_URL}/openrules`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(patchRequest),
+        });
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorData: any = {};
+
+            try {
+                errorData = errorText ? JSON.parse(errorText) : {};
+            } catch (e) {
+                console.warn("Failed to parse error response as JSON:", e);
+            }
+
+            let errorMessage = '';
+            console.error('Error Response:', errorData.reason);
+            console.error('Error Response:', errorData.detail);
+
+            if (errorData?.errors) {
+                const fieldErrors = Object.entries(errorData.errors)
+                    .map(([key, messages]) => ` ${(messages as string[]).join(", ")}`)
+                    .join("\n");
+
+                errorMessage += fieldErrors;
+                throw new Error(errorMessage + errorData);
+            }
+
+            console.error(errorData);
+
+            throw new Error(
+                errorData?.reason && errorData?.detail
+                    ? `${errorData.reason}: ${errorData.detail}`
+                    : errorData?.reason || errorData?.detail || errorData || 'Unknown error occurred'
+            );
+        }
+    },
 
 
 
