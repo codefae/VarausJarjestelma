@@ -8,7 +8,7 @@ namespace src.Modules.ReservationModule.Infrastructure.Data.Repositories;
 public class RoomRepository(ApplicationDbContext context) :IRoomRepository
 {
     public async Task<Room?> GetAsync(Guid id, CancellationToken cancellationToken) =>
-        await context.Rooms.Include(x => x.Devices).FirstOrDefaultAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
+        await context.Rooms.Include(x => x.Devices).AsSplitQuery().FirstOrDefaultAsync(x => x.Id == id, cancellationToken).ConfigureAwait(false);
 
     public async Task<IEnumerable<Room>> GetRoomsAsync(CancellationToken cancellationToken) => 
         await context.Rooms.ToListAsync(cancellationToken).ConfigureAwait(false);
